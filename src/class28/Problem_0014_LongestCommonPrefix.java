@@ -1,5 +1,13 @@
 package class28;
 
+/**
+ * 求几个str的最长公共前缀
+ * 遍历str,从第一个str开始，记录当前最长的前缀
+ * 到了第二个str，和第一个比对，记录当前最长的公共前缀
+ * 到了第三个str，和当前最长的公共前缀比对，更新当前最长的公共前缀
+ * 到了第四个str，和当前最长的公共前缀比对，更新当前最长的公共前缀
+ * ...
+ */
 public class Problem_0014_LongestCommonPrefix {
 
 	public static String longestCommonPrefix(String[] strs) {
