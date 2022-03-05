@@ -1,5 +1,9 @@
 package class30;
 
+/**
+ * 校验是不是搜索二叉树
+ * 这里采用morris遍历，保证中序下值上升即可
+ */
 public class Problem_0098_ValidateBinarySearchTree {
 
 	public static class TreeNode {
@@ -31,6 +35,7 @@ public class Problem_0098_ValidateBinarySearchTree {
 				}
 			}
 			if (pre != null && pre >= cur.val) {
+				/*这里不能直接return，需要把Morris遍历跑完，因为遍历会改树的结构*/
 				ans = false;
 			}
 			pre = cur.val;

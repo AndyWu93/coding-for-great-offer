@@ -1,5 +1,8 @@
 package class30;
 
+/**
+ * 第91题中给定的str包含'*'，代表1~9
+ */
 public class Problem_0639_DecodeWaysII {
 
 	public static int numDecodings0(String str) {
@@ -71,6 +74,9 @@ public class Problem_0639_DecodeWaysII {
 		return (int) ways1(str.toCharArray(), 0, dp);
 	}
 
+	/**
+	 * 简洁的代码
+	 */
 	public static long ways1(char[] s, int i, long[] dp) {
 		if (i == s.length) {
 			return 1;
@@ -81,15 +87,30 @@ public class Problem_0639_DecodeWaysII {
 		if (dp[i] != 0) {
 			return dp[i];
 		}
+		/*i位置单独转*/
 		long ans = ways1(s, i + 1, dp) * (s[i] == '*' ? 9 : 1);
+		/*i位置和和后面的一起转，那么i位置必须是 1 2 * 其他都不行*/
 		if (s[i] == '1' || s[i] == '2' || s[i] == '*') {
 			if (i + 1 < s.length) {
 				if (s[i + 1] == '*') {
+					/*
+					* i+1位置是*，采用枚举法得到
+					* **：15种
+					* 1* 9种
+					* 2* 6种
+					* */
 					ans += ways1(s, i + 2, dp) * (s[i] == '*' ? 15 : (s[i] == '1' ? 9 : 6));
 				} else {
+					/*
+					* i+1位置不是*，采用枚举法得到
+					* 如果i位置是*，
+					* *1~*6：2种
+					* *7~*9：1种
+					* */
 					if (s[i] == '*') {
 						ans += ways1(s, i + 2, dp) * (s[i + 1] < '7' ? 2 : 1);
 					} else {
+						/*都不是*，26以内可以转*/
 						ans += ((s[i] - '0') * 10 + s[i + 1] - '0') < 27 ? ways1(s, i + 2, dp) : 0;
 					}
 				}

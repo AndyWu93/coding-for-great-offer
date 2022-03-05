@@ -1,5 +1,11 @@
 package class30;
 
+/**
+ * Given the root of a binary tree, check whether it is a mirror of itself (i.e., symmetric around its center).
+ * 题意：判断一棵二叉树是否为镜像
+ * 解题：
+ * 	递归思维
+ */
 public class Problem_0101_SymmetricTree {
 
 	public static class TreeNode {

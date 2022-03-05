@@ -5,6 +5,25 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
+/**
+ * A path in a binary tree is a sequence of nodes where each pair of adjacent nodes in the sequence has an edge connecting them. A node can only appear in the sequence at most once. Note that the path does not need to pass through the root.
+ *
+ * The path sum of a path is the sum of the node's values in the path.
+ *
+ * Given the root of a binary tree, return the maximum path sum of any non-empty path.
+ * 题意：求二叉树的最大路径和
+ * 解题：二叉树的递归套路
+ * 	1.与x无关
+ * 	最大路径和在左树或者右树
+ * 	2.与x有关
+ *	仅x
+ *  x往左
+ *  x往右
+ *  穿过x
+ *
+ * 进阶：返回最大路径和的节点
+ *
+ */
 // follow up : 如果要求返回整个路径怎么做？
 public class Problem_0124_BinaryTreeMaximumPathSum {
 
@@ -62,8 +81,7 @@ public class Problem_0124_BinaryTreeMaximumPathSum {
 		// 4) x只往左扎 5）x只往右扎
 		maxPathSum = Math.max(maxPathSumFromHead, maxPathSum);
 		// 6）一起扎
-		if (leftInfo != null && rightInfo != null && leftInfo.maxPathSumFromHead > 0
-				&& rightInfo.maxPathSumFromHead > 0) {
+		if (leftInfo != null && rightInfo != null) {
 			maxPathSum = Math.max(maxPathSum, leftInfo.maxPathSumFromHead + rightInfo.maxPathSumFromHead + x.val);
 		}
 		return new Info(maxPathSum, maxPathSumFromHead);
@@ -74,6 +92,7 @@ public class Problem_0124_BinaryTreeMaximumPathSum {
 		List<TreeNode> ans = new ArrayList<>();
 		if (head != null) {
 			Data data = f(head);
+			/*找到了from和to，可以根据from，to，最低公共祖先，fatherMap将所有节点找出来*/
 			HashMap<TreeNode, TreeNode> fmap = new HashMap<>();
 			fmap.put(head, head);
 			fatherMap(head, fmap);
@@ -83,9 +102,11 @@ public class Problem_0124_BinaryTreeMaximumPathSum {
 	}
 
 	public static class Data {
+		/*最大路径和，以及from，to*/
 		public int maxAllSum;
 		public TreeNode from;
 		public TreeNode to;
+		/*从头开始的最大路径和，以及end*/
 		public int maxHeadSum;
 		public TreeNode end;
 

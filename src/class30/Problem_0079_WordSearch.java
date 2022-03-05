@@ -1,5 +1,13 @@
 package class30;
 
+/**
+ * Given an m x n grid of characters board and a string word, return true if word exists in the grid.
+ *
+ * The word can be constructed from letters of sequentially adjacent cells, where adjacent cells are horizontally or vertically neighboring. The same letter cell may not be used more than once.
+ * 题意：给定一个board和word，看能不能在board中走出word来，每次走一步，走过路不能再走
+ * 解题：
+ * 	枚举board每个位置为开头，使用递归
+ */
 public class Problem_0079_WordSearch {
 
 	public static boolean exist(char[][] board, String word) {
@@ -29,11 +37,18 @@ public class Problem_0079_WordSearch {
 			return false;
 		}
 		char tmp = b[i][j];
+		/*
+		* 不走回头路的设计：
+		* 走过的路，将这个位置的值设置成0
+		* 走完后，返回的时候要把值设置回去
+		* */
+		/*制造现场*/
 		b[i][j] = 0;
 		boolean ans = f(b, i - 1, j, w, k + 1) 
 				|| f(b, i + 1, j, w, k + 1) 
 				|| f(b, i, j - 1, w, k + 1)
 				|| f(b, i, j + 1, w, k + 1);
+		/*恢复现场*/
 		b[i][j] = tmp;
 		return ans;
 	}

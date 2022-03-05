@@ -1,5 +1,24 @@
 package class30;
 
+/**
+ * You are given a perfect binary tree where all leaves are on the same level, and every parent has two children. The binary tree has the following definition:
+ *
+ * struct Node {
+ *   int val;
+ *   Node *left;
+ *   Node *right;
+ *   Node *next;
+ * }
+ * Populate each next pointer to point to its next right node. If there is no next right node, the next pointer should be set to NULL.
+ *
+ * Initially, all next pointers are set to NULL.
+ * 题意：连好每一层的next指针，每一层的节点都能串起来
+ * 解题：
+ * 	宽度优先遍历，一次处理一层，一层内的节点都连好
+ *
+ * 进阶：额外空间复杂O(1)
+ * 	借用节点的next节点，做成一个单向链表结构，利用单链表的FIFO
+ */
 public class Problem_0116_PopulatingNextRightPointersInEachNode {
 
 	// 不要提交这个类
@@ -38,6 +57,9 @@ public class Problem_0116_PopulatingNextRightPointersInEachNode {
 		return root;
 	}
 
+	/*
+	* 单链表结构
+	* */
 	public static class MyQueue {
 		public Node head;
 		public Node tail;

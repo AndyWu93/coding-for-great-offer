@@ -1,5 +1,16 @@
 package class30;
 
+/**
+ * 给定一个数组（0~9）组成的str，将数字（1~26）转化为字母（a~z），问有多少种转化方式
+ * 思路：动态dp，从左往右的尝试模型
+ * dp[i]:i位置之前的字符都转好了，str[i..n-1]有多少种转化方式
+ * 规模：dp[n+1]
+ * dp[n]=1：没有字符了，收集到了1种转化结果
+ * 普遍位置dp[i]:
+ * a.str[i]=='0' dp[i]=0:以0开头的字符串无法转
+ * b.str[i]!='0' dp[i]=dp[i+1]+dp[i+2] (dp[i+2]需要判断一下i和i+1位置组合起立的数字是否小于26才加上去)
+ * 从左往右填dp
+ */
 public class Problem_0091_DecodeWays {
 
 	public static int numDecodings1(String s) {
