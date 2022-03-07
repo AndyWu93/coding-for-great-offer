@@ -1,5 +1,22 @@
 package class15;
 
+/**
+ * BestTimeToBuyAndSellStockII
+ * 限制：卖出之后下个时间点不能买入，需要再下个时间点才可以
+ * 解题：
+ * 	尝试理解下面连个数组：
+ * 1.buy[i]
+ * 	i时间点之前无限次交易的利润，以及最后的一个最佳买入点，整体最优
+ * 	i不参与交易：buy[i - 1]
+ * 	i参与交易：i一定是买入行为，上一次卖出最晚也得是i-2
+ * 	buy[i] = Math.max(buy[i - 1], sell[i - 2] - prices[i])
+ * 2.sell[i]
+ * 	i时间点之前无限次交易的利润，以及最后的一个最佳卖出点，整体最优
+ * 	i不参与交易：sell[i - 1]
+ * 	i参与交易：i一定是卖出行为，上一次买入没有限制，最晚可以在i-1
+ *	sell[i] = Math.max(sell[i - 1], buy[i - 1] + prices[i])
+ * 最后sell[n-1]:最后一个位置之前无限交易的利润以及一个最佳卖出点，整体最优利润，就是题解
+ */
 //leetcode 309
 public class Code05_BestTimeToBuyAndSellStockWithCooldown {
 
@@ -49,9 +66,7 @@ public class Code05_BestTimeToBuyAndSellStockWithCooldown {
 	// 于是通过分析，能得到以下的转移方程：
 	// buy[i] = Math.max(buy[i - 1], sell[i - 2] - prices[i])
 	
-	
-	
-	
+
 	// 如果i位置没有发生buy行为，说明有没有i位置都一样，那么buy[i] = buy[i-1]，这显而易见
 	// 如果i位置发生了buy行为, 那么buy[i] = sell[i - 2] - prices[i]，
 	// 因为你想在i位置买的话，你必须保证之前交易行为发生在0...i-2上，
@@ -72,7 +87,12 @@ public class Code05_BestTimeToBuyAndSellStockWithCooldown {
 		int[] sell = new int[N];
 		// buy[0] 不需要设置  buy[0] = -arr[0]
 		// sell[0] = 0
+		/*
+		* buy[0] = -arr[0],不需要设置，因为for循环里没有用到buy[0],只用到了sell[0],sell[0]=0
+		* buy[1]:最后一次交易一定是买入，所以0号时间和1号时间都不能有卖出行为
+		* */
 		buy[1] = Math.max(-prices[0], -prices[1]);
+		/*最后一次交易是卖出，0号时间点1号时间点都可以有卖出行为，0号时间点可以买入，1号时间点不能买，买了就不能卖了*/
 		sell[1] = Math.max(0, prices[1] - prices[0]);
 		for (int i = 2; i < N; i++) {
 			buy[i] = Math.max(buy[i - 1], sell[i - 2] - prices[i]);

@@ -1,5 +1,10 @@
 package class15;
 
+/**
+ * BestTimeToBuyAndSellStockII
+ * 限制：有交易费
+ *
+ */
 //leetcode 714
 public class Code06_BestTimeToBuyAndSellStockWithTransactionFee {
 
@@ -8,6 +13,7 @@ public class Code06_BestTimeToBuyAndSellStockWithTransactionFee {
 			return 0;
 		}
 		int N = arr.length;
+		/*因为在i位置可以无限买卖,就可以在i位置直接计算，所以不需要数组，用一个变量就好了*/
 		// 0..0   0 -[0] - fee
 		int bestbuy = -arr[0] - fee;
 		// 0..0  卖  0
