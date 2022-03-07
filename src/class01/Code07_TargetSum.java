@@ -2,6 +2,34 @@ package class01;
 
 import java.util.HashMap;
 
+/**
+ * 给定一个数组arr，你可以在每个数字之前决定+或者-
+ * 但是必须所有数字都参与
+ * 再给定一个数target，请问最后算出target的方法数是多少？
+ * 思路：动态规划，从左往右的尝试模型
+ * dp[i][j]:arr[0..i]的数自由运算，结果等于j的方法数
+ * 规模：dp[n][max(arr)-min(arr)] max(arr)-min(arr)含义：arr中自由运算的最大值-arr中自由运算的最小值
+ * dp转移：
+ * 	1）i位置的数前面用+
+ * 		dp[i][j] = dp[i-1][j-arr[i]]
+ * 	2) i位置的数前面用-
+ * 		dp[i][j] = dp[i-1][j+arr[i]]
+ * dp[i][j]的值时上面两种情况的和
+ * dp[n-1][target]就是题解
+ *
+ * 优化：
+ * 	1. arr可以都处理成非负数，不影响求最终的方法数
+ * 	2. target如果大于处理后的sum(arr)，0种方案
+ * 	3. target和sum(arr)奇偶性不一致，0种方案
+ * 	4. 假设有两个集合A/B，分别是arr中的一些数
+ * 		A-B=target
+ * 		A+B=sum(arr)
+ * 		2A = target + sum(arr)
+ * 	    A  = (target + sum(arr))/2
+ * 	    求出了集合A的方案数就相当于求出了target的方案数
+ * 	   集合A的方案数怎么求：arr中的数自由选择，累加和等于(target + sum(arr))/2的方案数是多少，
+ * 	   即转化为了一个背包问题
+ */
 // leetcode 494题
 public class Code07_TargetSum {
 
@@ -77,6 +105,10 @@ public class Code07_TargetSum {
 		for (int n : arr) {
 			sum += n;
 		}
+		/*
+		* ((target & 1) ^ (sum & 1)) != 0 :奇偶性不一致
+		* subset2(arr, (target + sum) >> 1)：arr中累加和=(target + sum) >> 1的背包方案数
+		* */
 		return sum < target || ((target & 1) ^ (sum & 1)) != 0 ? 0 : subset2(arr, (target + sum) >> 1);
 	}
 
@@ -88,10 +120,14 @@ public class Code07_TargetSum {
 			return 0;
 		}
 		int n = nums.length;
-		// dp[i][j] : nums前缀长度为i的所有子集，有多少累加和是j？
+		//
+		/*
+		* dp[i][j] : nums[0..i]位置的数自由选择，累加和是j的方法数是多少
+		* */
 		int[][] dp = new int[n + 1][s + 1];
 		// nums前缀长度为0的所有子集，有多少累加和是0？一个：空集
 		dp[0][0] = 1;
+		dp[0][nums[0]] = 1;
 		for (int i = 1; i <= n; i++) {
 			for (int j = 0; j <= s; j++) {
 				dp[i][j] = dp[i - 1][j];

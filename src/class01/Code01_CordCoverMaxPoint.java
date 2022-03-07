@@ -2,8 +2,25 @@ package class01;
 
 import java.util.Arrays;
 
+/**
+ * 给定一个有序数组arr，代表坐落在X轴上的点
+ * 给定一个正数K，代表绳子的长度
+ * 返回绳子最多压中几个点？
+ * 即使绳子边缘处盖住点也算盖住
+ * 解法一：贪心O(N*logN)
+ * 	枚举arr中的每一个位置的数作为绳子的末尾，（贪心：绳子的末尾一定压中了1个点，而不是x轴上一些无关紧要的数）
+ * 	找到绳子开头的位置（二分），收集答案
+ *
+ * 解法二：使用窗口
+ * 	窗口LR，L从0位置开始往右，每次L在一个位置时，R往右到不能再往右，收集答案再移动L
+ * 	LR不回退，O(N)
+ *
+ */
 public class Code01_CordCoverMaxPoint {
 
+	/**
+	 * 贪心解
+	 */
 	public static int maxPoint1(int[] arr, int L) {
 		int res = 1;
 		for (int i = 0; i < arr.length; i++) {
@@ -28,6 +45,9 @@ public class Code01_CordCoverMaxPoint {
 		return index;
 	}
 
+	/**
+	 * 窗口
+	 */
 	public static int maxPoint2(int[] arr, int L) {
 		int left = 0;
 		int right = 0;
@@ -35,8 +55,10 @@ public class Code01_CordCoverMaxPoint {
 		int max = 0;
 		while (left < N) {
 			while (right < N && arr[right] - arr[left] <= L) {
+				/*R不越界，且L-R之间的距离小于等于k*/
 				right++;
 			}
+			/*出while后收集答案，L++*/
 			max = Math.max(max, right - (left++));
 		}
 		return max;

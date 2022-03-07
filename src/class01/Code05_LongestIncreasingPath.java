@@ -1,5 +1,16 @@
 package class01;
 
+/**
+ * 给定一个二维数组matrix，
+ * 你可以从任何位置出发，走向上下左右四个方向
+ * 返回能走出来的最长的递增链长度
+ *
+ * 思路：
+ * 	本题是动态规划，使用记忆化搜索
+ * 流程：
+ * 	枚举matrix中的每一个位置为起始位置，计算它的后续最长递增链，收集取最大值
+ * 	如何计算一个位置的后续最长递增链？上下左右尝试
+ */
 public class Code05_LongestIncreasingPath {
 
 	public static int longestIncreasingPath1(int[][] matrix) {
@@ -14,7 +25,11 @@ public class Code05_LongestIncreasingPath {
 		return ans;
 	}
 
-	// 从m[i][j]开始走，走出来的最长递增链，返回！
+	 /*
+	 * 从m[i][j]开始走，走出来的最长递增链，返回！
+	 * 该方法有两个可变参数i,j，一定存在重复值的调用，
+	 * 如果改成严格位置的依赖会比较麻烦，因为不知道依赖关系。所以使用记忆化搜索解题会比较快
+	 * */
 	public static int process1(int[][] m, int i, int j) {
 		int up = i > 0 && m[i][j] < m[i - 1][j] ? process1(m, i - 1, j) : 0;
 		int down = i < (m.length - 1) && m[i][j] < m[i + 1][j] ? process1(m, i + 1, j) : 0;
