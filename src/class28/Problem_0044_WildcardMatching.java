@@ -1,6 +1,51 @@
 package class28;
 
+/**
+ * 给定一个字符串 (s) 和一个字符模式 (p) ，实现一个支持 '?' 和 '*' 的通配符匹配。
+ *
+ * '?' 可以匹配任何单个字符。
+ * '*' 可以匹配任意字符串（包括空字符串）。
+ * 两个字符串完全匹配才算匹配成功。
+ *
+ * 说明:
+ *
+ * s 可能为空，且只包含从 a-z 的小写字母。
+ * p 可能为空，且只包含从 a-z 的小写字母，以及字符 ? 和 *。
+ *
+ * 解题：
+ * 	本题和第10题的区别，* 不需要依赖前面一个字符了
+ * 	解题过程仍然可以使用第10题的方式，
+ * 	设计函数f(i,p),p位置往后能不能将i位置往后的str配出来
+ * 	函数中仍然是按p位置是不是 * 来分类讨论
+ * @see Problem_0010_RegularExpressionMatch
+ * 链接：https://leetcode.com/problems/wildcard-matching
+ */
 public class Problem_0044_WildcardMatching {
+
+	public static boolean isMatch4(String str, String pattern) {
+		char[] s = str.toCharArray();
+		char[] p = pattern.toCharArray();
+		return process(s, p, 0, 0);
+	}
+
+	private static boolean process(char[] str, char[] pattern, int si, int pi) {
+		if (pi==pattern.length){
+			return si==str.length;
+		}
+
+		if (pattern[pi]=='*'){
+			while (si!=str.length){
+				if (process(str, pattern, si, pi+1)){
+					return true;
+				}
+				si++;
+			}
+			return process(str, pattern, si, pi+1);
+		}else {
+			return si!=str.length && (str[si]==pattern[pi] || pattern[pi]=='?') && process(str, pattern, si+1, pi+1);
+		}
+	}
+
 
 	public static boolean isMatch1(String str, String pattern) {
 		char[] s = str.toCharArray();

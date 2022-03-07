@@ -23,6 +23,8 @@ package class28;
  * 计算完移动计算过的指针，继续计算下个位置
  *
  * 总结：最大值预处理数组可以用指针方案优化
+ *
+ * @see Problem_0011_ContainerWithMostWater
  */
 public class Problem_0042_TrappingRainWater {
 

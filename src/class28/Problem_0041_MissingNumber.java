@@ -19,6 +19,10 @@ public class Problem_0041_MissingNumber {
 	public static int firstMissingPositive(int[] arr) {
 		// l是盯着的位置
 		// 0 ~ L-1有效区
+		/*
+		* 一般会有3个指针，两个是区域，另一个index是当前位置
+		* 这里index指针和L指针合并了
+		* */
 		int L = 0;
 		int R = arr.length;
 		/*遍历过程中一直盯着L位置的数*/
