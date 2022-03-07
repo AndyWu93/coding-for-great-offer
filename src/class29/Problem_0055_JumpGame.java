@@ -10,6 +10,7 @@ package class29;
  * 	数组中的每个元素代表你在该位置可以跳跃的最大长度。
  * 	判断你是否能够到达最后一个下标。
  *
+ * @see class28.Problem_0045_JumpGame
  */
 public class Problem_0055_JumpGame {
 
