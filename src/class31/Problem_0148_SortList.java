@@ -1,5 +1,17 @@
 package class31;
 
+/**
+ * Given the head of a linked list, return the list after sorting it in ascending order.
+ * 题意：链表排序，时间复杂度O(N*logN)，额外空间复杂度O(1)
+ * 解题：
+ * 	时间复杂度O(N*logN)，额外空间复杂度O(1)
+ * 	如果是数组，堆排序可以达到要求，归并不行，因为归并开了辅助数组
+ * 	但是这里是链表，链表merge的时候不需要额外空间，天然O(1)
+ * 	此外，经典归并需要递归，这里要求额外空间复杂度O(1)，就不能递归，可以改成迭代
+ * 	归并迭代的重要概念，步长：即遍历过程中每2个步长的元素merge成1个，然后扩大步长再遍历
+ * 	链表的merge
+ * 	@see class28.Problem_0021_MergeTwoSortedLinkedList
+ */
 public class Problem_0148_SortList {
 
 	public static class ListNode {
@@ -21,13 +33,17 @@ public class Problem_0148_SortList {
 			cur = cur.next;
 		}
 		ListNode h = head;
+		/*每次拿两个步长的元素，这些元素的头节点*/
 		ListNode teamFirst = head;
+		/*用来把排好序的链表串起来*/
 		ListNode pre = null;
+		/*步长小于N，不需要达到N，如果步长=N-1，左组N-1个元素，右组1个元素*/
 		for (int len = 1; len < N; len <<= 1) {
 			while (teamFirst != null) {
 				// 左组从哪到哪 ls le
 				// 右组从哪到哪 rs re
 				// 左 右 next
+				/*根据当前的teamFirst和步长拿到左组和右组的头尾节点*/
 				ListNode[] hthtn = hthtn(teamFirst, len);
 				// ls...le rs...re -> merge去
 				// 整体的头、整体的尾
@@ -36,9 +52,11 @@ public class Problem_0148_SortList {
 					h = mhmt[0];
 					pre = mhmt[1];
 				} else {
+					/*mhmt[0..1]是一段已经排好序的链表*/
 					pre.next = mhmt[0];
 					pre = mhmt[1];
 				}
+				/*只有还有下个步长的元素，就要继续*/
 				teamFirst = hthtn[4];
 			}
 			teamFirst = h;

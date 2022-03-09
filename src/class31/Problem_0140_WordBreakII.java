@@ -3,6 +3,14 @@ package class31;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Given a string s and a dictionary of strings wordDict, add spaces in s to construct a sentence where each word is a valid dictionary word. Return all such possible sentences in any order.
+ *
+ * Note that the same word in the dictionary may be reused multiple times in the segmentation.
+ * 题意：将给定的str，通过dict分解，返回所有可能的分解组合，一个组合里所有的词放到一个str里，空格分隔
+ * 解题：
+ * 	在Problem_0139_WordBreak的基础上，用深度优先遍历，收集单词
+ */
 public class Problem_0140_WordBreakII {
 
 	public static class Node {
@@ -42,6 +50,7 @@ public class Problem_0140_WordBreakII {
 			ans.add(builder.toString());
 		} else {
 			Node cur = root;
+			/*从前往后枚举所有有效前缀*/
 			for (int end = index; end < str.length; end++) {
 				// str[i..end] （能不能拆出来）
 				int road = str[end] - 'a';
@@ -49,11 +58,14 @@ public class Problem_0140_WordBreakII {
 					break;
 				}
 				cur = cur.nexts[road];
+				/*两个剪枝条件*/
 				if (cur.end && dp[end + 1]) {
 					// [i...end] 前缀串
 					// str.subString(i,end+1)  [i..end]
+					/*制造现场*/
 					path.add(cur.path);
 					process(str, end + 1, root, dp, path, ans);
+					/*清理现场*/
 					path.remove(path.size() - 1);
 				}
 			}
@@ -73,6 +85,7 @@ public class Problem_0140_WordBreakII {
 				}
 				node = node.nexts[index];
 			}
+			/*前缀树end节点增加word存储，方便获取*/
 			node.path = str;
 			node.end = true;
 		}
@@ -93,6 +106,7 @@ public class Problem_0140_WordBreakII {
 				}
 				cur = cur.nexts[path];
 				if (cur.end && dp[end + 1]) {
+					/*这个版本好，dp[i]一旦是true了就去求下一个dp*/
 					dp[i] = true;
 					break;
 				}

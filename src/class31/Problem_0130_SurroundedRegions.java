@@ -1,5 +1,14 @@
 package class31;
 
+/**
+ * Given an m x n matrix board containing 'X' and 'O', capture all regions that are 4-directionally surrounded by 'X'.
+ *
+ * A region is captured by flipping all 'O's into 'X's in that surrounded region.
+ * 题意：将二维数组中上下左右都被'x'包裹的区域都变成'x'
+ * 解题：
+ * 	感染函数
+ * 	从边界的'O'向内部感染，所到区域的'O'都改成'F'，剩下没有被感染到的'O'就是被'X'包裹的
+ */
 public class Problem_0130_SurroundedRegions {
 
 //	// m -> 二维数组， 不是0就是1
@@ -66,6 +75,9 @@ public class Problem_0130_SurroundedRegions {
 		}
 	}
 
+	/**
+	 * 最佳实现
+	 */
 	// 从边界开始感染的方法，比第一种方法更好
 	public static void solve2(char[][] board) {
 		if (board == null || board.length == 0 || board[0] == null || board[0].length == 0) {
@@ -74,6 +86,7 @@ public class Problem_0130_SurroundedRegions {
 		int N = board.length;
 		int M = board[0].length;
 		for (int j = 0; j < M; j++) {
+			/*上下边界的O向内感染*/
 			if (board[0][j] == 'O') {
 				free(board, 0, j);
 			}
@@ -82,6 +95,7 @@ public class Problem_0130_SurroundedRegions {
 			}
 		}
 		for (int i = 1; i < N - 1; i++) {
+			/*左右边界的O先内感染*/
 			if (board[i][0] == 'O') {
 				free(board, i, 0);
 			}
@@ -89,6 +103,7 @@ public class Problem_0130_SurroundedRegions {
 				free(board, i, M - 1);
 			}
 		}
+		/*没有被感染的O变成X，被感染的O恢复成O*/
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < M; j++) {
 				if (board[i][j] == 'O') {
