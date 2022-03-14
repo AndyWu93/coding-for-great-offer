@@ -1,5 +1,9 @@
 package class32;
 
+/**
+ * Reverse bits of a given 32 bits unsigned integer.
+ * 题意：32位反转180度，返回
+ */
 public class Problem_0190_ReverseBits {
 
 	// 代码看着很魔幻吧？

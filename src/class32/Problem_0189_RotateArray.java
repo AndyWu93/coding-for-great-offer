@@ -1,15 +1,28 @@
 package class32;
 
+/**
+ * Given an array, rotate the array to the right by k steps, where k is non-negative.
+ * 题意：将数组向右平移k步
+ * 解题：
+ * 	将3个部分逆序，自动实现了数组的平移。
+ *
+ */
 public class Problem_0189_RotateArray {
 
 	public void rotate1(int[] nums, int k) {
 		int N = nums.length;
 		k = k % N;
+		/*将要被平移到右边的数*/
 		reverse(nums, 0, N - k - 1);
+		/*后面k个数被挤到前面去的*/
 		reverse(nums, N - k, N - 1);
+		/*整体*/
 		reverse(nums, 0, N - 1);
 	}
 
+	/*
+	* 如何逆序？两个指针首位交换
+	* */
 	public static void reverse(int[] nums, int L, int R) {
 		while (L < R) {
 			int tmp = nums[L];

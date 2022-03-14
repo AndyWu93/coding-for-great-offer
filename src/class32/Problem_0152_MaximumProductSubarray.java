@@ -1,5 +1,21 @@
 package class32;
 
+/**
+ * Given an integer array nums, find a contiguous non-empty subarray within the array that has the largest product, and return the product.
+ *
+ * The test cases are generated so that the answer will fit in a 32-bit integer.
+ *
+ * A subarray is a contiguous subsequence of the array.
+ * 题意：求最大子数组的累乘积
+ * 解题：
+ * 	子数组问题，必须以i位置结尾的最大子数组累乘积是多少
+ * 	假设来的i位置，i位置结尾的最大子数组累乘积有3种可能性：
+ * 	1. ans = arr[i]
+ * 	2. ans = arr[i] * dp[i-1]
+ * 	3. 第三种情况最难想，arr[i]位置可能是负数，所以需要乘以i-1位置的最小累乘积，以得到最大累乘积
+ * 		ans = arr[i] * dpMin[i-1]
+ * 	所以来到i位置时需要求以i位置结尾的最大/最小子数组累乘积
+ */
 public class Problem_0152_MaximumProductSubarray {
 
 	
