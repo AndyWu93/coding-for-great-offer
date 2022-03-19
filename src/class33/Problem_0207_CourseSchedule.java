@@ -5,6 +5,15 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 
+/**
+ * There are a total of numCourses courses you have to take, labeled from 0 to numCourses - 1. You are given an array prerequisites where prerequisites[i] = [ai, bi] indicates that you must take course bi first if you want to take course ai.
+ *
+ * For example, the pair [0, 1], indicates that to take course 0 you have to first take course 1.
+ * Return true if you can finish all courses. Otherwise, return false.
+ * 题意：判断给定结构是否能拓扑排序
+ * 解题：
+ * 	拓扑排序有3中方式，最简单的方式就依次消掉入度为0的节点，及其影响
+ */
 public class Problem_0207_CourseSchedule {
 
 	// 一个node，就是一个课程
@@ -22,10 +31,14 @@ public class Problem_0207_CourseSchedule {
 		}
 	}
 
+	/**
+	 * 可以参考这个方法，面向对象
+	 */
 	public static boolean canFinish1(int numCourses, int[][] prerequisites) {
 		if (prerequisites == null || prerequisites.length == 0) {
 			return true;
 		}
+		/*把图建立好*/
 		// 一个编号 对应 一个课的实例
 		HashMap<Integer, Course> nodes = new HashMap<>();
 		for (int[] arr : prerequisites) {
@@ -43,6 +56,7 @@ public class Problem_0207_CourseSchedule {
 			t.in++;
 		}
 		int needPrerequisiteNums = nodes.size();
+		/*建立好图以后，如何依次消掉入度为0的节点？宽度优先遍历，每次将入度为0的节点放入queue中*/
 		Queue<Course> zeroInQueue = new LinkedList<>();
 		for (Course node : nodes.values()) {
 			if (node.in == 0) {
@@ -52,8 +66,10 @@ public class Problem_0207_CourseSchedule {
 		int count = 0;
 		while (!zeroInQueue.isEmpty()) {
 			Course cur = zeroInQueue.poll();
+			/*弹出的时候记录一下收集到的入度为0的节点个数*/
 			count++;
 			for (Course next : cur.nexts) {
+				/*邻居，消减入度，且如果入度为0，加入队列*/
 				if (--next.in == 0) {
 					zeroInQueue.add(next);
 				}
@@ -62,6 +78,9 @@ public class Problem_0207_CourseSchedule {
 		return count == needPrerequisiteNums;
 	}
 
+	/**
+	 * 优化了常数时间，打破了面向对象了，感觉不太好
+	 */
 	// 和方法1算法过程一样
 	// 但是写法优化了
 	public static boolean canFinish2(int courses, int[][] relation) {

@@ -1,5 +1,18 @@
 package class33;
 
+/**
+ * Given an integer n, return the least number of perfect square numbers that sum to n.
+ *
+ * A perfect square is an integer that is the square of an integer; in other words, it is the product of some integer with itself. For example, 1, 4, 9, and 16 are perfect squares while 3 and 11 are not.
+ * 题意：一个数最少拆成几个平方数相加
+ * 解题：
+ * 	数学规律：任意一个数都可以拆成4个以内的平方数
+ * 	所以只要试一下
+ * 		n可不可以由1个平方数构成：n开根号得到一个整型，看这个数能不能构成n
+ * 		n可不可以由2个平方数构成：枚举这两个数，这两个数一定都在n以内
+ * 		n可不可以由3个平方数构成：枚举第一个平方数a，再看n-a能不能由2个平方数构成
+ * 	以上可以加入dp优化
+ */
 public class Problem_0279_PerfectSquares {
 
 	// 暴力解
