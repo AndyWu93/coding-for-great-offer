@@ -9,7 +9,7 @@ package class30;
  * 普遍位置dp[i]:
  * a.str[i]=='0' dp[i]=0:以0开头的字符串无法转
  * b.str[i]!='0' dp[i]=dp[i+1]+dp[i+2] (dp[i+2]需要判断一下i和i+1位置组合起立的数字是否小于26才加上去)
- * 从左往右填dp
+ * 从右往左填dp
  */
 public class Problem_0091_DecodeWays {
 
