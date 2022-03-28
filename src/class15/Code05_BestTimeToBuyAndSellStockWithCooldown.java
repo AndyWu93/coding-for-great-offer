@@ -92,7 +92,11 @@ public class Code05_BestTimeToBuyAndSellStockWithCooldown {
 		* buy[1]:最后一次交易一定是买入，所以0号时间和1号时间都不能有卖出行为
 		* */
 		buy[1] = Math.max(-prices[0], -prices[1]);
-		/*最后一次交易是卖出，0号时间点1号时间点都可以有卖出行为，0号时间点可以买入，1号时间点不能买，买了就不能卖了*/
+		/*
+		* 最后一次交易是卖出，所以可以
+		* 0：买入， 0：卖出
+		* 0：买入， 1：卖出
+		* */
 		sell[1] = Math.max(0, prices[1] - prices[0]);
 		for (int i = 2; i < N; i++) {
 			buy[i] = Math.max(buy[i - 1], sell[i - 2] - prices[i]);
