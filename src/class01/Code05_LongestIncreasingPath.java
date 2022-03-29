@@ -11,6 +11,7 @@ package class01;
  * 	枚举matrix中的每一个位置为起始位置，计算它的后续最长递增链，收集取最大值
  * 	如何计算一个位置的后续最长递增链？上下左右尝试
  */
+//https://leetcode.com/problems/longest-increasing-path-in-a-matrix/
 public class Code05_LongestIncreasingPath {
 
 	public static int longestIncreasingPath1(int[][] matrix) {
