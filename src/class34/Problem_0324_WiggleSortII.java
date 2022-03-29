@@ -1,5 +1,26 @@
 package class34;
 
+import class20.Code03_ShuffleProblem;
+
+/**
+ * Given an integer array nums, reorder it such that nums[0] < nums[1] > nums[2] < nums[3]....
+ *
+ * You may assume the input array always has a valid answer.
+ * 题意：给定一个无序数组arr，调成按小大小大依次排放，要求时间复杂度O(N),空间复杂度O(1)
+ * 解题：
+ * 	分两步：
+ * 		1. 找到第N/2的数（改写快排）：不是为了真的找到第N/2的数，而是想将arr调整成 小 中 大 的结构
+ * 		2. 调整：
+ * 			a. arr长度为偶数：完美洗牌后，反转数组(注意：这里只能反转数组，不能两两交换)
+ * 			b. arr长度为奇数：arr[0]不动，arr[1..n-1]完美洗牌
+ * 如何证明该思路是对的呢？
+ * 	将arr全排列，每种情况都验证一下，看是否存在该排放的arr，
+ * 		a.如果全排列中存在，那上面的方式排出来的结果一定是对的
+ * 		b.如果全排列中不存在，那上面的方式排出来的结果一定是错的
+ * 	能够证明出a，b，则证明思路正确
+ *
+ * @see Code03_ShuffleProblem
+ */
 public class Problem_0324_WiggleSortII {
 
 	// 时间复杂度O(N)，额外空间复杂度O(1)
