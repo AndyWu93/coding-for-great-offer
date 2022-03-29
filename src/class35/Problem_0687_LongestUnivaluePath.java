@@ -1,5 +1,16 @@
 package class35;
 
+/**
+ * Given the root of a binary tree, return the length of the longest path, where each node in the path has the same value. This path may or may not pass through the root.
+ *
+ * The length of the path between two nodes is represented by the number of edges between them.
+ * 题意：一个二叉树中，求节点值相同的最大路径（这里的路径为边数，即节点数-1）
+ * 解题：
+ * 	二叉树的递归套路
+ * 	经过分析，可以向每个x节点要以下两个信息：
+ * 		路径必须从x出发且只能往下走的情况下，路径的最大距离
+ * 		路径不要求必须从x出发的情况下，整棵树的合法路径最大距离
+ */
 public class Problem_0687_LongestUnivaluePath {
 
 	public static class TreeNode {
@@ -16,6 +27,7 @@ public class Problem_0687_LongestUnivaluePath {
 		if (root == null) {
 			return 0;
 		}
+		/*为什么-1，info里的是节点数*/
 		return process(root).max - 1;
 	}
 
@@ -37,13 +49,9 @@ public class Problem_0687_LongestUnivaluePath {
 		}
 		TreeNode l = x.left;
 		TreeNode r = x.right;
-		// 左树上，不要求从左孩子出发，最大路径
-		// 左树上，必须从左孩子出发，往下的最大路径
 		Info linfo = process(l);
-		// 右树上，不要求从右孩子出发，最大路径
-		// 右树上，必须从右孩子出发，往下的最大路径
 		Info rinfo = process(r);
-		// 必须从x出发的情况下，往下的最大路径
+		/*必须从x出发的情况下，往下的最大路径，为什么初始值为1？这里路径是节点数*/
 		int len = 1;
 		if (l != null && l.val == x.val) {
 			len = linfo.len + 1;
@@ -51,7 +59,7 @@ public class Problem_0687_LongestUnivaluePath {
 		if (r != null && r.val == x.val) {
 			len = Math.max(len, rinfo.len + 1);
 		}
-		// 不要求从x出发，最大路径
+		/*不一定要求从x出发，整体的最大路径*/
 		int max = Math.max(Math.max(linfo.max, rinfo.max), len);
 		if (l != null && r != null && l.val == x.val && r.val == x.val) {
 			max = Math.max(max, linfo.len + rinfo.len + 1);

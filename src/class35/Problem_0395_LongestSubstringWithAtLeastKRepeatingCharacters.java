@@ -1,5 +1,13 @@
 package class35;
 
+/**
+ * Given a string s and an integer k, return the length of the longest substring of s such that the frequency of each character in this substring is greater than or equal to k.
+ * 题意：找出字符串s中的一个最长的子串，其中每种字符数量需要大于k，返回该子串长度
+ * 解题：
+ * 	本题首先看下窗口能不能解，但是窗口的大小和每种字符数量没有直接的单调性，
+ * 	如何让他们产生单调性？固定字符种类，即可让窗口大小和字符数量产生单调性，从而找到最长的窗口
+ * 	枚举字符种类数量：1种~26种，收集每次枚举后得到的最大窗口，收集最大窗口
+ */
 public class Problem_0395_LongestSubstringWithAtLeastKRepeatingCharacters {
 
 	public static int longestSubstring1(String s, int k) {
@@ -26,6 +34,9 @@ public class Problem_0395_LongestSubstringWithAtLeastKRepeatingCharacters {
 		return max;
 	}
 
+	/**
+	 * 最优解
+	 */
 	public static int longestSubstring2(String s, int k) {
 		char[] str = s.toCharArray();
 		int N = str.length;
@@ -42,21 +53,37 @@ public class Problem_0395_LongestSubstringWithAtLeastKRepeatingCharacters {
 			int R = -1;
 			for (int L = 0; L < N; L++) { // L要尝试每一个窗口的最左位置
 				// [L..R] R+1
+				/*
+				* 还有字符，且
+				* 目前拥有的字符种类不到require个，
+				* 或者到了require个，但是下个字符进来不会增加字符种类
+				* count[str[R + 1] - 'a'] == 0：R+1位置的词频为0，表示这是一个新的字符种类
+				* */
 				while (R + 1 < N && !(collect == require && count[str[R + 1] - 'a'] == 0)) {
+					/*窗口右移，注意此时R的值变化了*/
 					R++;
 					if (count[str[R] - 'a'] == 0) {
+						/*一个新的字符种类，种类数++*/
 						collect++;
 					}
 					if (count[str[R] - 'a'] == k - 1) {
+						/*一个原有字符种类即将达标，达标种类数++*/
 						satisfy++;
 					}
+					/*R位置的数进来了，词频统计*/
 					count[str[R] - 'a']++;
 				}
 				// [L...R]
 				if (satisfy == require) {
+					/*当前枚举的种类数都达标了，收集require个种类的字符都达标，且此时L位置开头下，的最大长度*/
 					max = Math.max(max, R - L + 1);
 				}
 				// L++
+				/*
+				* L即将右移：计算一个新的窗口开始位置下，收集到的最大长度
+				* L位置的数的词频
+				* 此时收集和满足的种类都要看下是否发生变化
+				* */
 				if (count[str[L] - 'a'] == 1) {
 					collect--;
 				}
