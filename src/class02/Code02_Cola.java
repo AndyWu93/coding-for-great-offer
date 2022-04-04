@@ -1,5 +1,16 @@
 package class02;
 
+/**
+ * 贩卖机只支持硬币支付，且收退都只支持10 ，50，100三种面额
+ * 一次购买只能出一瓶可乐，且投钱和找零都遵循优先使用大钱的原则
+ * 需要购买的可乐数量是m，其中手头拥有的10、50、100的数量分别为a、b、c，可乐的价格是x(x是10的倍数)
+ * 请计算出需要投入硬币次数
+ *
+ * 题意：买可乐，一瓶一瓶买，从大面值开始用，机器找零也是从大面值开始找，求买m瓶可乐需要一共投币几次，m数据量为10^18
+ * 解题：本题考查逻辑转化设计及边界coding问题
+ * 	m的数据量特别大，所以一瓶一瓶计算不可能，所以复杂度过程一定和m大小无关，那就尝试通过一个面值一个面值的计算。
+ * 	即第一个面值的所有钱能搞定几瓶，剩下几张加个第二个面值，看能搞定几瓶
+ */
 public class Code02_Cola {
 	/*
 	 * 买饮料 时间限制： 3000MS 内存限制： 589824KB 题目描述：
@@ -54,6 +65,9 @@ public class Code02_Cola {
 		}
 	}
 
+	/**
+	 * 复杂度接近O(1)
+	 */
 	// 正式的方法
 	// 要买的可乐数量，m
 	// 100元有a张
@@ -66,10 +80,12 @@ public class Code02_Cola {
 		int[] zhang = { c,  b,  a };
 		// 总共需要多少次投币
 		int puts = 0;
+		/*下面两个变量用来统计之前的面值一共多少钱，一共几张*/
 		// 之前面值的钱还剩下多少总钱数
 		int preQianRest = 0;
 		// 之前面值的钱还剩下多少总张数
 		int preQianZhang = 0;
+		/*遍历面值，注意遍历过程中，m一直在更新，买了一瓶m就--，所以m为0了就该停*/
 		for (int i = 0; i < 3 && m != 0; i++) {
 			// 要用之前剩下的钱、当前面值的钱，共同买第一瓶可乐
 			// 之前的面值剩下多少钱，是preQianRest
@@ -77,23 +93,36 @@ public class Code02_Cola {
 			// 之所以之前的面值会剩下来，一定是剩下的钱，一直攒不出一瓶可乐的单价
 			// 当前的面值付出一些钱+之前剩下的钱，此时有可能凑出一瓶可乐来
 			// 那么当前面值参与搞定第一瓶可乐，需要掏出多少张呢？就是curQianFirstBuyZhang
+			/*
+			* 来到一个面值，首先要看下之前的钱，能不能在买第一瓶时用掉
+			* x - preQianRest：除了历史，还需要的钱，需要计算当前面值需要多少张能够凑够这么多钱
+			* 怎么凑？（钱/单价）向上取整
+			* a/b向上取整计算方法：(a+b-1)/b
+			* */
 			int curQianFirstBuyZhang = (x - preQianRest + qian[i] - 1) / qian[i];
-			if (zhang[i] >= curQianFirstBuyZhang) { // 如果之前的钱和当前面值的钱，能凑出第一瓶可乐
-				// 凑出来了一瓶可乐也可能存在找钱的情况，
+			if (zhang[i] >= curQianFirstBuyZhang) { /*如果之前的钱和当前面值的钱，能凑出第一瓶可乐*/
+				/*凑出来了一瓶可乐也可能存在找钱的情况，把找零加到后面的面值里去*/
 				giveRest(qian, zhang, i + 1, (preQianRest + qian[i] * curQianFirstBuyZhang) - x, 1);
+				/*第一瓶可乐，用掉了之前所有的历史张数，加当前面值的张数*/
 				puts += curQianFirstBuyZhang + preQianZhang;
+				/*用掉了在zhang里减掉*/
 				zhang[i] -= curQianFirstBuyZhang;
+				/*成功买了一瓶可乐*/
 				m--;
-			} else { // 如果之前的钱和当前面值的钱，不能凑出第一瓶可乐
+			} else { /*如果之前的钱和当前面值的钱，不能凑出第一瓶可乐*/
+				/*把当前面试的钱都交给历史，去遍历下个面值*/
 				preQianRest += qian[i] * zhang[i];
 				preQianZhang += zhang[i];
+				/*不能忘了*/
 				continue;
 			}
-			// 凑出第一瓶可乐之后，当前的面值有可能能继续买更多的可乐
-			// 以下过程就是后续的可乐怎么用当前面值的钱来买
+			/*
+			* 凑出第一瓶可乐之后，当前的面值有可能能继续买更多的可乐
+			* 以下过程就是后续的可乐怎么用当前面值的钱来买
+			* */
 			// 用当前面值的钱，买一瓶可乐需要几张
 			int curQianBuyOneColaZhang = (x + qian[i] - 1) / qian[i];
-			// 用当前面值的钱，一共可以搞定几瓶可乐
+			// 用当前面值的钱，一共可以搞定几瓶可乐, min：不能超过m瓶可乐
 			int curQianBuyColas = Math.min(zhang[i] / curQianBuyOneColaZhang, m);
 			// 用当前面值的钱，每搞定一瓶可乐，收货机会吐出多少零钱
 			int oneTimeRest = qian[i] * curQianBuyOneColaZhang - x;
@@ -107,15 +136,29 @@ public class Code02_Cola {
 			m -= curQianBuyColas;
 			// 当前面值可能剩下若干张，要参与到后续买可乐的过程中去，
 			// 所以要更新preQianRest和preQianZhang
+			/*当前的张数，减去用掉的，剩余的钱都交给历史，作为下个面值购买第一瓶的前置*/
 			zhang[i] -= curQianBuyOneColaZhang * curQianBuyColas;
 			preQianRest = qian[i] * zhang[i];
 			preQianZhang = zhang[i];
 		}
+		/*用完所有面值，m还不是0，说明要买的可乐实在太多了，当前的钱根本不够*/
 		return m == 0 ? puts : -1;
 	}
 
+	/*
+	* 购买一瓶可乐找零oneTimeRest，一共买了times瓶，找零的面值可选为从i号面值一直到最小号
+	* 将这些钱都加到zhang里面去
+	* i:面值编号
+	* oneTimeRest：一次找零多少钱
+	* times：找零次数
+	* */
 	public static void giveRest(int[] qian, int[] zhang, int i, int oneTimeRest, int times) {
 		for (; i < 3; i++) {
+			/*
+			* oneTimeRest / qian[i]：一次找零了多少张i面值的
+			* 乘以次数，加到zhang里去
+			* oneTimeRest %= qian[i]：i号面值用完了，还需要找oneTimeRest % qian[i]这么多钱，赋值给oneTimeRest给下个面值去找
+			* */
 			zhang[i] += (oneTimeRest / qian[i]) * times;
 			oneTimeRest %= qian[i];
 		}

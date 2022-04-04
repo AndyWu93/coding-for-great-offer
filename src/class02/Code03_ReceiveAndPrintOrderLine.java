@@ -2,9 +2,16 @@ package class02;
 
 import java.util.HashMap;
 
+/**
+ * 已知一个消息流会不断地吐出整数1~N，但不一定按照顺序依次吐出，如果上次打印的序号为i， 那么当i+1出现时
+ * 请打印i+1及其之后接收过的并且连续的所有数，直到1~N全部接收并打印完，请设计这种接收并打印的结构
+ * 解题：
+ * 	思路：map，记录一个连续区间的首尾，当来到一个数据时，合并区间。tips：为了数据能够连续输出，连续区间的数据可以用链表串起来
+ */
 public class Code03_ReceiveAndPrintOrderLine {
 
 	public static class Node {
+		/*数据*/
 		public String info;
 		public Node next;
 
@@ -16,11 +23,13 @@ public class Code03_ReceiveAndPrintOrderLine {
 	public static class MessageBox {
 		private HashMap<Integer, Node> headMap;
 		private HashMap<Integer, Node> tailMap;
+		/*记录现在在等哪个编号，每次都是等一个连续区间的头节点*/
 		private int waitPoint;
 
 		public MessageBox() {
 			headMap = new HashMap<Integer, Node>();
 			tailMap = new HashMap<Integer, Node>();
+			/*初始化，一开始等1*/
 			waitPoint = 1;
 		}
 
@@ -47,18 +56,22 @@ public class Code03_ReceiveAndPrintOrderLine {
 				headMap.remove(num + 1);
 			}
 			if (num == waitPoint) {
+				/*等到了，说明下个连续区间好了，可以打印了*/
 				print();
 			}
 		}
 
 		private void print() {
 			Node node = headMap.get(waitPoint);
+			/*释放了该连续区间的头*/
 			headMap.remove(waitPoint);
 			while (node != null) {
 				System.out.print(node.info + " ");
 				node = node.next;
+				/*遍历时++*/
 				waitPoint++;
 			}
+			/*释放了该连续区间的尾*/
 			tailMap.remove(waitPoint-1);
 			System.out.println();
 		}

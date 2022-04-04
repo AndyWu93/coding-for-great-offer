@@ -2,6 +2,17 @@ package class02;
 
 import java.util.Arrays;
 
+/**
+ * 现有司机N*2人，调度中心会将所有司机平分给A、B两区域，i号司机去A可得收入为income[i][0]，去B可得收入为income[i][1]
+ * 返回能使所有司机总收入最高的方案是多少钱?
+ * 数据量：income.size 为3*10^3
+ * 解题：
+ * 	从数据量看，O(N^2)可以过，所以考虑一张aN * bN的dp表
+ * 	每一个司机去A或者去B，取最大值，从左往右的尝试
+ * 	假设数据量到了10^6，那复杂度必须控制在O(N*logN),这时应该考虑贪心，因为二维dp过不了。一个排序就可以了
+ *
+ * @see class35.Code02_MagicStone
+ */
 public class Code04_Drive {
 
 	// 课上的现场版本
@@ -25,6 +36,11 @@ public class Code04_Drive {
 			return 0;
 		}
 		// 还剩下司机！
+		/*
+		* 司机必须去A或者必须去B，这里用一个参数就搞定
+		* 平均分配的模型可以参考这种一个参数搞定的技巧
+		* */
+		/*剩下的司机刚好等于A剩余名额，表明B满了*/
 		if (income.length - index == rest) {
 			return income[index][0] + process1(income, index + 1, rest - 1);
 		}
