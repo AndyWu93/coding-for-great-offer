@@ -2,14 +2,29 @@ package class03;
 
 import java.util.HashSet;
 
+/**
+ * 只由小写字母（a~z）组成的一批字符串，都放在字符类型的数组String[] arr中，
+ * 如果其中某两个字符串，所含有的字符种类完全一样，就将两个字符串算作一类 比如：baacba和bac就算作一类
+ * 虽然长度不一样，但是所含字符的种类完全一样（a、b、c） 返回arr中有多少类？
+ *
+ * 解题：
+ * 	用int的0~25位标记一个str中26个字符有没有出现过
+ */
 public class Code02_HowManyTypes {
 
-	/*
-	 * 只由小写字母（a~z）组成的一批字符串，都放在字符类型的数组String[] arr中，
-	 * 如果其中某两个字符串，所含有的字符种类完全一样，就将两个字符串算作一类 比如：baacba和bac就算作一类
-	 * 虽然长度不一样，但是所含字符的种类完全一样（a、b、c） 返回arr中有多少类？
-	 * 
-	 */
+	public static int types(String[] arr) {
+		HashSet<Integer> types = new HashSet<>();
+		for (String str : arr) {
+			char[] chs = str.toCharArray();
+			int key = 0;
+			for(int i = 0 ; i < chs.length;i++) {
+				/*每出现一个字符，在相应的位上标1*/
+				key |= (1 << (chs[i] - 'a'));
+			}
+			types.add(key);
+		}
+		return types.size();
+	}
 
 	public static int types1(String[] arr) {
 		HashSet<String> types = new HashSet<>();
@@ -30,18 +45,6 @@ public class Code02_HowManyTypes {
 		return types.size();
 	}
 
-	public static int types2(String[] arr) {
-		HashSet<Integer> types = new HashSet<>();
-		for (String str : arr) {
-			char[] chs = str.toCharArray();
-			int key = 0;
-			for(int i = 0 ; i < chs.length;i++) {
-				key |= (1 << (chs[i] - 'a'));
-			}
-			types.add(key);
-		}
-		return types.size();
-	}
 
 	// for test
 	public static String[] getRandomStringArray(int possibilities, int strMaxSize, int arrMaxSize) {
@@ -70,7 +73,7 @@ public class Code02_HowManyTypes {
 		for (int i = 0; i < testTimes; i++) {
 			String[] arr = getRandomStringArray(possibilities, strMaxSize, arrMaxSize);
 			int ans1 = types1(arr);
-			int ans2 = types2(arr);
+			int ans2 = types(arr);
 			if (ans1 != ans2) {
 				System.out.println("Oops!");
 			}
