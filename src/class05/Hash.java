@@ -6,6 +6,9 @@ import java.security.Security;
 
 import javax.xml.bind.DatatypeConverter;
 
+/**
+ * 算hash，不要用String里的hash
+ */
 public class Hash {
 
 	private MessageDigest hash;
