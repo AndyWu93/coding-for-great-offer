@@ -1,5 +1,12 @@
 package class04;
 
+/**
+ * 返回一个数组中所选数字不能相邻的情况下最大子序列累加和
+ * 解题：
+ * 	子序列，从左往右的尝试模型
+ * 	3中可能性取最大值，要注意arr[i]也是一种可能性，很容易被忽略
+ * 	dp[i] = max(arr[i],dp[i-1],dp[i-2]+arr[i])
+ */
 public class Code04_SubArrayMaxSumFollowUp {
 
 	public static int subSqeMaxSumNoNext(int[] arr) {
@@ -21,6 +28,9 @@ public class Code04_SubArrayMaxSumFollowUp {
 		return dp[arr.length - 1];
 	}
 
+	/**
+	 * DP
+	 */
 	// 给定一个数组arr，在不能取相邻数的情况下，返回所有组合中的最大累加和
 	// 思路：
 	// 定义dp[i] : 表示arr[0...i]范围上，在不能取相邻数的情况下，返回所有组合中的最大累加和
@@ -47,6 +57,9 @@ public class Code04_SubArrayMaxSumFollowUp {
 			return Math.max(arr[0], arr[1]);
 		}
 		int[] dp = new int[N];
+		/*
+		* 后面求dp时需要依赖dp[i-1]和dp[i-2],所以这两项先求出来
+		* */
 		dp[0] = arr[0];
 		dp[1] = Math.max(arr[0], arr[1]);
 		for (int i = 2; i < N; i++) {

@@ -3,15 +3,16 @@ package class04;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * 今日头条原题
+ *
+ * 数组为{3, 2, 2, 3, 1}，查询为(0, 3, 2)。意思是在数组里下标0~3这个范围上，有几个2？返回2。
+ * 假设给你一个数组arr，对这个数组的查询非常频繁，请返回所有查询的结果
+ * 解题：
+ * 	生成一个map，key：数组中的一个值，value：这个值的下标list
+ * 	问题就变成了在一个有序list的两个值中间有几个数，用二分确定两个下标，相减得到
+ */
 public class Code01_QueryHobby {
-
-	/*
-	 * 今日头条原题
-	 * 
-	 * 数组为{3, 2, 2, 3, 1}，查询为(0, 3, 2)。意思是在数组里下标0~3这个范围上，有几个2？返回2。
-	 * 假设给你一个数组arr，对这个数组的查询非常频繁，请返回所有查询的结果
-	 * 
-	 */
 
 	public static class QueryBox1 {
 		private int[] arr;

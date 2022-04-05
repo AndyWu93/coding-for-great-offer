@@ -1,5 +1,10 @@
 package class04;
 
+/**
+ * 求最大子数组累加和
+ * 解题：
+ * 	动态规划，经典子数组思路，从左往右的尝试
+ */
 // 本题测试链接 : https://leetcode.com/problems/maximum-subarray/
 public class Code02_SubArrayMaxSum {
 
@@ -17,6 +22,9 @@ public class Code02_SubArrayMaxSum {
 		return max;
 	}
 
+	/**
+	 * 动态规划
+	 */
 	public static int maxSubArray2(int[] arr) {
 		if (arr == null || arr.length == 0) {
 			return 0;

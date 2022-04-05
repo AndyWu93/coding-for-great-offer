@@ -1,15 +1,44 @@
 package class04;
 
+/**
+ *
+ * 老师想给孩子们分发糖果，有N个孩子站成了一条直线，老师会根据每个孩子的表现，预先给他们评分
+ * 你需要按照以下要求，帮助老师给这些孩子分发糖果：
+ * 每个孩子至少分配到 1 个糖果。
+ * 评分更高的孩子必须比他两侧的邻位孩子获得更多的糖果。
+ * 那么这样下来，返回老师至少需要准备多少颗糖果
+ *
+ * 进阶：在原来要求的基础上，增加一个要求，相邻的孩子间如果分数一样，分的糖果数必须一样，返回至少需要准备多少颗糖果
+ *
+ * 解题：
+ * 	把小朋友的得分看成抛物线，每个峰得到的糖果一定要大于两边的小朋友的糖果
+ * 	所以考虑用两个辅助数组
+ * 	left[i]:i号小朋友糖的数量，只相对于左边比较
+ * 	right[i]:i号小朋友糖的数量，只相对于右边比较
+ * 	计算结果：
+ * 	ans[i] = max(left[i],right[i])
+ *
+ * @see class35.Code05_CircleCandy
+ */
 // 测试链接 : https://leetcode.com/problems/candy/
 public class Code05_CandyProblem {
 
-	// 这是原问题的优良解
-	// 时间复杂度O(N)，额外空间复杂度O(N)
+	/**
+	 * 这是原问题的优良解
+	 * 时间复杂度O(N)，额外空间复杂度O(N)
+	 */
 	public static int candy1(int[] arr) {
 		if (arr == null || arr.length == 0) {
 			return 0;
 		}
 		int N = arr.length;
+		/*
+		* 这里的两个辅助数组为什么第一个位置是0?
+		* 这应该是做了优化：
+		* 	因为判断大小时，正常的写法是：
+		* 	left[i] = nums[i] > nums[i - 1] ? (left[i - 1] + 1) : 1;
+		* 	这里赋值时没有判断
+		* */
 		int[] left = new int[N];
 		for (int i = 1; i < N; i++) {
 			if (arr[i - 1] < arr[i]) {
@@ -29,8 +58,13 @@ public class Code05_CandyProblem {
 		return ans + N;
 	}
 
-	// 这是原问题空间优化后的解
-	// 时间复杂度O(N)，额外空间复杂度O(1)
+	/**
+	 * 优化：辅助数组可不可以省掉？
+	 * 可以将arr分为多个坡，一上一下为一个完整的坡
+	 * 一个坡里面遍历来回遍历，计算出糖果总数
+	 *
+	 * 时间复杂度O(N)，额外空间复杂度O(1)
+	 */
 	public static int candy2(int[] arr) {
 		if (arr == null || arr.length == 0) {
 			return 0;
@@ -75,6 +109,12 @@ public class Code05_CandyProblem {
 		return n + n * (n - 1) / 2;
 	}
 
+
+	/**
+	 * 进阶：相同得分，分糖一样
+	 * 这里做了优化，也可以不优化：
+	 * 	辅助数组中，遇到相等的分数，糖果分一样多就行
+	 */
 	// 这是进阶问题的最优解，不要提交这个
 	// 时间复杂度O(N), 额外空间复杂度O(1)
 	public static int candy3(int[] arr) {
