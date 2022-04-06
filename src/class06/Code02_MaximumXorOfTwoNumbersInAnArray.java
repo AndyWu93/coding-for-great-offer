@@ -1,5 +1,10 @@
 package class06;
 
+/**
+ * 给定一个数组arr，想知道arr中哪两个数的异或结果最大，返回最大的异或结果
+ * 解题：
+ * 	同Code01_MaxXOR，使用前缀树做决策
+ */
 // 本题测试链接 : https://leetcode.com/problems/maximum-xor-of-two-numbers-in-an-array/
 public class Code02_MaximumXorOfTwoNumbersInAnArray {
 
@@ -39,9 +44,12 @@ public class Code02_MaximumXorOfTwoNumbersInAnArray {
 		}
 		int max = Integer.MIN_VALUE;
 		NumTrie numTrie = new NumTrie();
+		/*先把第一个数放进去*/
 		numTrie.add(arr[0]);
 		for (int i = 1; i < arr.length; i++) {
+			/*找出最优解*/
 			max = Math.max(max, numTrie.maxXor(arr[i]));
+			/*再把当前数放入前缀树*/
 			numTrie.add(arr[i]);
 		}
 		return max;
