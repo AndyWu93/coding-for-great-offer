@@ -41,12 +41,26 @@ public class Code01_StringKth {
 		char[] num = s.toCharArray();
 		int ans = 0;
 		for (int i = 0, rest = len - 1; i < num.length; i++, rest--) {
+			/*
+			* (num[i] - 'a') * f(rest)：比num[i]小的字母开头，剩下长度为(0~len)个，一共多少可能性
+			* +1：					    和num[i]相等的字母开头，剩下长度为0个，一个有1个
+			* 为什么只用num[i]-'a'？因为只需要考虑i位置的字符就行了，i前面的可以当成和i位置字符是一个整体
+			 * */
 			ans += (num[i] - 'a') * f(rest) + 1;
 		}
 		return ans;
 	}
 
-	// 不管以什么开头，剩下长度为(0~len)的所有可能性有几个
+	//
+	/*
+	* 不管以什么开头，剩下长度为(0~len)的所有可能性有几个返回
+	* x开头，剩下长度为0，可能性有1个
+	* x开头，剩下长度为1，可能性有26个
+	* x开头，剩下长度为2，可能性有26^2个
+	* x开头，剩下长度为3，可能性有26^3个
+	* ...
+	* 剩下长度为(0~len)的所有可能性:以上结果累加
+	* */
 	public static int f(int len) {
 		int ans = 1;
 		for (int i = 1, base = 26; i <= len; i++, base *= 26) {

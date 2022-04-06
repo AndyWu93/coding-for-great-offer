@@ -15,9 +15,15 @@ public class Code04_WalkToEnd {
 		}
 		int n = map.length;
 		int m = map[0].length;
+		/*小根堆，*/
 		PriorityQueue<Node> heap = new PriorityQueue<>((a, b) -> a.cost - b.cost);
+		/*走过的不能走*/
 		boolean[][] visited = new boolean[n][m];
 		add(map, 0, 0, 0, heap, visited);
+		/*
+		* a星算法？最短寻路算法？
+		* 这里每一次面临选择，都是把目前总代价最小的拿出来，去上下左右选择
+		* */
 		while (!heap.isEmpty()) {
 			Node cur = heap.poll();
 			if (cur.row == n - 1 && cur.col == m - 1) {
@@ -31,6 +37,10 @@ public class Code04_WalkToEnd {
 		return -1;
 	}
 
+	/*
+	* ij位置等待加到heap里去
+	* 之前的代价是pre
+	* */
 	public static void add(int[][] m, int i, int j, int pre, PriorityQueue<Node> heap, boolean[][] visited) {
 		if (i >= 0 && i < m.length && j >= 0 && j < m[0].length && m[i][j] != 2 && !visited[i][j]) {
 			heap.add(new Node(i, j, pre + (m[i][j] == 0 ? 2 : 1)));

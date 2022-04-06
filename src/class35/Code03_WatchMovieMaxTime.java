@@ -2,6 +2,12 @@ package class35;
 
 import java.util.Arrays;
 
+/**
+ * 2000场电影
+ * 如果任意选择3场电影，筛选出符合条件的，复杂度是O(2000*1999*1998),大于10^7，必须要考虑更小复杂度的
+ * 将电影排序，然后选出电影并计算最大值
+ * 样本对应模型？
+ */
 // 来自小红书
 // 一场电影开始和结束时间可以用一个小数组来表示["07:30","12:00"]
 // 已知有2000场电影开始和结束都在同一天，这一天从00:00开始到23:59结束
@@ -46,18 +52,30 @@ public class Code03_WatchMovieMaxTime {
 		movies[j] = tmp;
 	}
 
+	/**
+	 * 动态规划
+	 */
 	// 优化后的递归解
 	public static int maxEnjoy2(int[][] movies) {
 		Arrays.sort(movies, (a, b) -> a[0] != b[0] ? (a[0] - b[0]) : (a[1] - b[1]));
 		return process2(movies, 0, 0, 3);
 	}
 
+	/*
+	* index:来到了第index号电影
+	* time：当前时间
+	* rest：还有几场电影要安排
+	* 返回：从index到最后，能够安排的电影总时长
+	* */
 	public static int process2(int[][] movies, int index, int time, int rest) {
 		if (index == movies.length) {
 			return rest == 0 ? 0 : -1;
 		}
+		/*当前电影不安排*/
 		int p1 = process2(movies, index + 1, time, rest);
+		/*安排当前电影，开始时间必须大于等于当前时间，且还可以安排*/
 		int next = movies[index][0] >= time && rest > 0 ? process2(movies, index + 1, movies[index][1], rest - 1) : -1;
+		/*安排当前电影：要把单前电影的时长加上*/
 		int p2 = next != -1 ? (movies[index][1] - movies[index][0] + next) : -1;
 		return Math.max(p1, p2);
 	}
