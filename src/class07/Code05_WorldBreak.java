@@ -2,13 +2,35 @@ package class07;
 
 import java.util.HashSet;
 
+/**
+ * 假设所有字符都是小写字母. 大字符串是str. arr是去重的单词表, 每个单词都不是空字符串且可以使用任意次.
+ * 使用arr中的单词有多少种拼接str的方式. 返回方法数.
+ *
+ * 思路：本题为动态规划，从左往右的尝试模型
+ * 规模：dp[str.length+1]
+ * dp[i]含义：从大字符串str的i位置开始一直到结尾的子串，能够被arr单词表中单词分解的方法数
+ * dp[n] = 1 (str没有子串了，被分解的方式只有1种，就是什么单词都不用)
+ * dp[i]:
+ * 枚举从i到n-1的位置作为子串的end位置，
+ * 对于每个前缀串都要看一下arr中是不是存在该单词(arr可以做出set)O(N)，如果存在，就将后面剩下来的子串拿过去分解，看分解到最后一个字符有多少种方案O(N^2)
+ * 填写dp[i]需要从后往前填写，对于每一个i有：
+ * for(int end = i, end<n,end ++){
+ * 	   String pre = String.subString(i,end+1);
+ *     if(set.contains(pre)){
+ *         dp[i] += dp[end+1];
+ *     }
+ * }
+ *
+ * 复杂度：1张dp表套了1个for循环O(N^2)，里面套了一个set查询O(N),一共O(N^3)
+ *
+ * 优化：
+ * 将set查询变成O(1),此外枚举end的过程能否提前结束
+ * 方式：前缀树
+ * 优化后复杂度：建立前缀树O(M) + dp套for循环O(N^2)
+ *
+ */
 public class Code05_WorldBreak {
-	/*
-	 * 
-	 * 假设所有字符都是小写字母. 大字符串是str. arr是去重的单词表, 每个单词都不是空字符串且可以使用任意次.
-	 * 使用arr中的单词有多少种拼接str的方式. 返回方法数.
-	 * 
-	 */
+
 
 	public static int ways(String str, String[] arr) {
 		HashSet<String> set = new HashSet<>();
@@ -18,7 +40,7 @@ public class Code05_WorldBreak {
 		return process(str, 0, set);
 	}
 
-	// 所有的可分解字符串，都已经放在了set中
+	// 所有的贴纸，都已经放在了set中
 	// str[i....] 能够被set中的贴纸分解的话，返回分解的方法数
 	public static int process(String str, int i, HashSet<String> set) {
 		if (i == str.length()) { // 没字符串需要分解了！
@@ -91,6 +113,9 @@ public class Code05_WorldBreak {
 		}
 	}
 
+	/**
+	 * 前缀树来实现
+	 */
 	public static int ways3(String str, String[] arr) {
 		if (str == null || str.length() == 0 || arr == null || arr.length == 0) {
 			return 0;
@@ -113,7 +138,6 @@ public class Code05_WorldBreak {
 	}
 
 	// str[i...] 被分解的方法数，返回
-
 	public static int g(char[] str, Node root, int i) {
 		if (i == str.length) {
 			return 1;
@@ -124,6 +148,10 @@ public class Code05_WorldBreak {
 		for (int end = i; end < str.length; end++) {
 			int path = str[end] - 'a';
 			if (cur.nexts[path] == null) {
+				/*
+				* 没路了，以str[i}开头的str不用试了，字典里没有了,
+				* 所以以str[i]开头的所有方法数就都凑齐了，可以返回了
+				* */
 				break;
 			}
 			cur = cur.nexts[path];
@@ -134,10 +162,14 @@ public class Code05_WorldBreak {
 		return ways;
 	}
 
+	/**
+	 * 最优解
+	 */
 	public static int ways4(String s, String[] arr) {
 		if (s == null || s.length() == 0 || arr == null || arr.length == 0) {
 			return 0;
 		}
+		/*建立前缀树，该树的节点只需要带有一个boolean的end信息*/
 		Node root = new Node();
 		for (String str : arr) {
 			char[] chs = str.toCharArray();
@@ -150,21 +182,29 @@ public class Code05_WorldBreak {
 				}
 				node = node.nexts[index];
 			}
+			//最后一个节点的end
 			node.end = true;
 		}
+
 		char[] str = s.toCharArray();
 		int N = str.length;
 		int[] dp = new int[N + 1];
+		/*str没有子串了，被分解的方式只有1种，就是什么单词都不用*/
 		dp[N] = 1;
+		/*从后往前填写*/
 		for (int i = N - 1; i >= 0; i--) {
 			Node cur = root;
+			/*枚举从i开头的子串*/
 			for (int end = i; end < N; end++) {
 				int path = str[end] - 'a';
 				if (cur.nexts[path] == null) {
+					/*如果没路了不需要继续枚举了，前缀树的特点，以当前前缀开头的单词不会再有了*/
 					break;
 				}
+				/*来到这条路后面的节点*/
 				cur = cur.nexts[path];
 				if (cur.end) {
+					/*该路构成了一个word，就看str剩下的部分构成的方案数*/
 					dp[i] += dp[end + 1];
 				}
 			}
@@ -172,7 +212,7 @@ public class Code05_WorldBreak {
 		return dp[0];
 	}
 
-	// 以下的逻辑都是为了测试
+	// for test
 	public static class RandomSample {
 		public String str;
 		public String[] arr;
@@ -183,6 +223,7 @@ public class Code05_WorldBreak {
 		}
 	}
 
+	// for test
 	// 随机样本产生器
 	public static RandomSample generateRandomSample(char[] candidates, int num, int len, int joint) {
 		String[] seeds = randomSeeds(candidates, num, len);
@@ -202,6 +243,7 @@ public class Code05_WorldBreak {
 		return new RandomSample(all.toString(), arr);
 	}
 
+	// for test
 	public static String[] randomSeeds(char[] candidates, int num, int len) {
 		String[] arr = new String[(int) (Math.random() * num) + 1];
 		for (int i = 0; i < arr.length; i++) {
@@ -214,6 +256,7 @@ public class Code05_WorldBreak {
 		return arr;
 	}
 
+	// for test
 	public static void main(String[] args) {
 		char[] candidates = { 'a', 'b' };
 		int num = 20;

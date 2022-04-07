@@ -3,14 +3,18 @@ package class07;
 import java.util.Arrays;
 import java.util.HashSet;
 
+/**
+ * 近期面试题
+ * 给定一个有序数组arr，其中值可能为正、负、0。返回arr中每个数都平方之后，不同的数有多少种？
+ * 给定一个数组arr，先递减然后递增，返回arr中有多少个不同的数字？
+ * 解题；
+ * 	上面两道是一样的
+ * 	用两个指针，从两侧往中间滑，
+ * 	谁大，谁先滑动，需要滑到与自己不同数
+ * 	相等，就一起滑动，需要滑到与自己不同数
+ * 	每次滑动都统计一下，收集到1个不同的数
+ */
 public class Code04_Power2Diffs {
-
-	/*
-	 * 给定一个有序数组arr，其中值可能为正、负、0。 返回arr中每个数都平方之后不同的结果有多少种？
-	 * 
-	 * 给定一个数组arr，先递减然后递增，返回arr中有多少个绝对值不同的数字？
-	 * 
-	 */
 
 	// 时间复杂度O(N)，额外空间复杂度O(N)
 	public static int diff1(int[] arr) {
@@ -24,6 +28,9 @@ public class Code04_Power2Diffs {
 		return set.size();
 	}
 
+	/**
+	 * 双指针法，最优解
+	 */
 	// 时间复杂度O(N)，额外空间复杂度O(1)
 	public static int diff2(int[] arr) {
 		int N = arr.length;
@@ -33,6 +40,7 @@ public class Code04_Power2Diffs {
 		int leftAbs = 0;
 		int rightAbs = 0;
 		while (L <= R) {
+			/*滑动前统计一下*/
 			count++;
 			leftAbs = Math.abs(arr[L]);
 			rightAbs = Math.abs(arr[R]);
@@ -45,6 +53,7 @@ public class Code04_Power2Diffs {
 					L++;
 				}
 			} else {
+				/*一起滑动*/
 				while (L < N && Math.abs(arr[L]) == leftAbs) {
 					L++;
 				}

@@ -2,6 +2,12 @@ package class07;
 
 import java.util.HashMap;
 
+/**
+ * String str, int K, String[] parts, int[] record
+ * Parts和records的长度一样长，str一定要分割成k个部分，分割出来的每部分在parts里必须得有，那一部分的得分在record里，请问str切成k个部分，返回最大得分
+ *
+ * @see Code05_WorldBreak
+ */
 public class Code06_SplitStringMaxValue {
 
 	// 暴力解
