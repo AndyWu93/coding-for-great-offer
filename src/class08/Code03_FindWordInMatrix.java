@@ -1,6 +1,6 @@
 package class08;
 
-/*
+/**
  * 给定一个char[][] matrix，也就是char类型的二维数组，再给定一个字符串word，
  * 可以从任何一个某个位置出发，可以走上下左右，能不能找到word？
  * 比如：
@@ -19,9 +19,60 @@ package class08;
  * 比如，word = "zoooz"，是不可以找到的，因为允许走一条路径中已经走过的字符不能重复走
  * 
  * 写出两种设定下的code
- * 
+ *
+ * 解题：
+ * 	写尝试就要了
+ * @see class30.Problem_0079_WordSearch 设定2
  * */
 public class Code03_FindWordInMatrix {
+
+	/**
+	 * 设定1的尝试
+	 */
+	// 可以走重复路
+	// 从m[i][j]这个字符出发，能不能找到str[k...]这个后缀串
+	public static boolean canLoop(char[][] m, int i, int j, char[] str, int k) {
+		if (k == str.length) {
+			return true;
+		}
+		if (i == -1 || i == m.length || j == -1 || j == m[0].length || m[i][j] != str[k]) {
+			return false;
+		}
+		// 不越界！m[i][j] == str[k] 对的上的！
+		// str[k+1....]
+		boolean ans = false;
+		if (canLoop(m, i + 1, j, str, k + 1) || canLoop(m, i - 1, j, str, k + 1) || canLoop(m, i, j + 1, str, k + 1)
+				|| canLoop(m, i, j - 1, str, k + 1)) {
+			ans = true;
+		}
+		return ans;
+	}
+
+	/**
+	 * 设定2的尝试
+	 */
+	// 不能走重复路
+	// 从m[i][j]这个字符出发，能不能找到str[k...]这个后缀串
+	public static boolean noLoop(char[][] m, int i, int j, char[] str, int k) {
+		if (k == str.length) {
+			return true;
+		}
+		if (i == -1 || i == m.length || j == -1 || j == m[0].length || m[i][j] != str[k]) {
+			return false;
+		}
+		// 不越界！也不是回头路！m[i][j] == str[k] 也对的上！
+		m[i][j] = 0;
+		boolean ans = false;
+		if (noLoop(m, i + 1, j, str, k + 1) || noLoop(m, i - 1, j, str, k + 1) || noLoop(m, i, j + 1, str, k + 1)
+				|| noLoop(m, i, j - 1, str, k + 1)) {
+			ans = true;
+		}
+		m[i][j] = str[k];
+		return ans;
+	}
+
+
+
 
 	// 可以走重复的设定
 	public static boolean findWord1(char[][] m, String word) {
@@ -59,44 +110,6 @@ public class Code03_FindWordInMatrix {
 		return false;
 	}
 
-	// 可以走重复路
-	// 从m[i][j]这个字符出发，能不能找到str[k...]这个后缀串
-	public static boolean canLoop(char[][] m, int i, int j, char[] str, int k) {
-		if (k == str.length) {
-			return true;
-		}
-		if (i == -1 || i == m.length || j == -1 || j == m[0].length || m[i][j] != str[k]) {
-			return false;
-		}
-		// 不越界！m[i][j] == str[k] 对的上的！
-		// str[k+1....]
-		boolean ans = false;
-		if (canLoop(m, i + 1, j, str, k + 1) || canLoop(m, i - 1, j, str, k + 1) || canLoop(m, i, j + 1, str, k + 1)
-				|| canLoop(m, i, j - 1, str, k + 1)) {
-			ans = true;
-		}
-		return ans;
-	}
-
-	// 不能走重复路
-	// 从m[i][j]这个字符出发，能不能找到str[k...]这个后缀串
-	public static boolean noLoop(char[][] m, int i, int j, char[] str, int k) {
-		if (k == str.length) {
-			return true;
-		}
-		if (i == -1 || i == m.length || j == -1 || j == m[0].length || m[i][j] != str[k]) {
-			return false;
-		}
-		// 不越界！也不是回头路！m[i][j] == str[k] 也对的上！
-		m[i][j] = 0;
-		boolean ans = false;
-		if (noLoop(m, i + 1, j, str, k + 1) || noLoop(m, i - 1, j, str, k + 1) || noLoop(m, i, j + 1, str, k + 1)
-				|| noLoop(m, i, j - 1, str, k + 1)) {
-			ans = true;
-		}
-		m[i][j] = str[k];
-		return ans;
-	}
 
 	public static boolean checkPrevious(boolean[][][] dp, int i, int j, int k) {
 		boolean up = i > 0 ? (dp[i - 1][j][k - 1]) : false;

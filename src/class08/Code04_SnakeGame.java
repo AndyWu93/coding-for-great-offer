@@ -2,22 +2,17 @@ package class08;
 
 import java.util.Arrays;
 
+/**
+ * 一个二维matrix中值可能是0，正整数，负整数。一条血量为0的蛇空降第一列任何位置，可以一次往右上角、右侧、右下角移动一个格子，直到最右侧
+ * 该蛇一共可以发动一次能力使得当前格子提供的血量变成相反数。问该蛇能够获得的最大血量是多少
+ * 思路：该题为动态规划，业务限制模型
+ * 业务限制模型需要从暴力递归开始，其中尝试的方式都是业务给的
+ */
 public class Code04_SnakeGame {
 
-	public static int walk1(int[][] matrix) {
-		if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
-			return 0;
-		}
-		int res = Integer.MIN_VALUE;
-		for (int i = 0; i < matrix.length; i++) {
-			for (int j = 0; j < matrix[0].length; j++) {
-				int[] ans = process(matrix, i, j);
-				res = Math.max(res, Math.max(ans[0], ans[1]));
-			}
-		}
-		return res;
-	}
-
+	/**
+	 * 课上版本
+	 */
 	public static int zuo(int[][] matrix) {
 		if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
 			return 0;
@@ -79,47 +74,86 @@ public class Code04_SnakeGame {
 		return new Info(no, yes);
 	}
 
-	// 从假想的最优左侧到达(i,j)的旅程中
-	// 0) 在没有使用过能力的情况下，返回路径最大和，没有可能到达的话，返回负
-	// 1) 在使用过能力的情况下，返回路径最大和，没有可能到达的话，返回负
+
+	/**
+	 * 暴力递归
+	 * @param matrix
+	 * @return
+	 */
+	public static int walk1(int[][] matrix) {
+		if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
+			return 0;
+		}
+		int res = Integer.MIN_VALUE;
+		/*枚举所有的终点位置，收集每个终点位置获得的血量，取最大值*/
+		for (int i = 0; i < matrix.length; i++) {
+			for (int j = 0; j < matrix[0].length; j++) {
+				int[] ans = process(matrix, i, j);
+				res = Math.max(res, Math.max(ans[0], ans[1]));
+			}
+		}
+		return res;
+	}
+
+
+	/*
+	* 从假想的最优左侧到达(i,j)作为终点位置，返回获得的最大血量是一个长度为2的数组
+	* [0] 在没有使用过能力的情况下，返回路径最大和，没有可能到达的话，返回负
+	* [1] 在使用过能力的情况下，返回路径最大和，没有可能到达的话，返回负
+	* */
 	public static int[] process(int[][] m, int i, int j) {
 		if (j == 0) { // (i,j)就是最左侧的位置
+			/*此时获得的足最大血量就是当前值或者其相反数*/
 			return new int[] { m[i][j], -m[i][j] };
 		}
+		/*拿到左侧最大血量*/
 		int[] preAns = process(m, i, j - 1);
 		// 所有的路中，完全不使用能力的情况下，能够到达的最好长度是多大
 		int preUnuse = preAns[0];
 		// 所有的路中，使用过一次能力的情况下，能够到达的最好长度是多大
 		int preUse = preAns[1];
 		if (i - 1 >= 0) {
+			/*拿到左上角最大血量*/
 			preAns = process(m, i - 1, j - 1);
 			preUnuse = Math.max(preUnuse, preAns[0]);
 			preUse = Math.max(preUse, preAns[1]);
 		}
 		if (i + 1 < m.length) {
+			/*拿到左下角最大血量*/
 			preAns = process(m, i + 1, j - 1);
 			preUnuse = Math.max(preUnuse, preAns[0]);
 			preUse = Math.max(preUse, preAns[1]);
 		}
-		// preUnuse 之前旅程，没用过能力
-		// preUse 之前旅程，已经使用过能力了
+		/*
+		* 此时preUnuse，preUse是左边3个位置pk后的最大值
+		* preUnuse 之前旅程，没用过能力
+		* preUse 之前旅程，已经使用过能力了
+		* */
 		int no = -1; // 之前没使用过能力，当前位置也不使用能力，的最优解
 		int yes = -1; // 不管是之前使用能力，还是当前使用了能力，请保证能力只使用一次，最优解
 		if (preUnuse >= 0) {
 			no = m[i][j] + preUnuse;
+			/*本次使用能力*/
 			yes = -m[i][j] + preUnuse;
 		}
 		if (preUse >= 0) {
+			/*之前使用了能力*/
 			yes = Math.max(yes, m[i][j] + preUse);
 		}
 		return new int[] { no, yes };
 	}
 
+	/**
+	 * 如何dp？记忆化搜索
+	 * @param matrix
+	 * @return
+	 */
 	public static int walk2(int[][] matrix) {
 		if (matrix == null || matrix.length == 0 || matrix[0].length == 0) {
 			return 0;
 		}
 		int max = Integer.MIN_VALUE;
+		/*一张二维表，每个格子里两个值*/
 		int[][][] dp = new int[matrix.length][matrix[0].length][2];
 		for (int i = 0; i < dp.length; i++) {
 			dp[i][0][0] = matrix[i][0];
@@ -153,6 +187,8 @@ public class Code04_SnakeGame {
 		return max;
 	}
 
+
+	// for test
 	public static int[][] generateRandomArray(int row, int col, int value) {
 		int[][] arr = new int[row][col];
 		for (int i = 0; i < arr.length; i++) {
