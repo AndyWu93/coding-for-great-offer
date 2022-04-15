@@ -3,6 +3,14 @@ package class09;
 import java.util.Arrays;
 import java.util.Comparator;
 
+/**
+ * 信封嵌套问题：
+ * 最长递增子序列的应用
+ * 将所有的信封(长，宽)按长递增，长一样的时候宽递减排序
+ * 排好以后，将所有的宽都拿出来组成数组arr
+ * 因为长已经从小到大或者相等排好了，只要保证宽严格递增，就能求出最多能嵌套多少层
+ * arr的最长递增子序列就是题解
+ */
 // 本题测试链接 : https://leetcode.com/problems/russian-doll-envelopes/
 public class Code04_EnvelopesProblem {
 
