@@ -1,8 +1,19 @@
 package class10;
 
+/**
+ * 给定一个布尔表达式和一个期望的布尔结果 result，布尔表达式由 0 (false)、1 (true)、& (AND)、 | (OR) 和 ^ (XOR) 符号组成。实现一个函数，算出有几种可使该表达式得出 result 值的括号方法。
+ *
+ * 题意：给表达式随意画括号，返回T/F的方法数
+ * 解题：
+ * 	思路：枚举每一个逻辑符号，作为最后一步运算，分别求出左右两边的状态和对应方法数，再根据当前枚举的逻辑符号做运算
+ * 	即范围尝试模型
+ */
 // 本题测试链接 : https://leetcode-cn.com/problems/boolean-evaluation-lcci/
 public class Code05_BooleanEvaluation {
 
+	/**
+	 * 范围尝试模型
+	 */
 	public static int countEval0(String express, int desired) {
 		if (express == null || express.equals("")) {
 			return 0;
@@ -15,7 +26,9 @@ public class Code05_BooleanEvaluation {
 	}
 
 	public static class Info {
+		/*返回T的方法数*/
 		public int t;
+		/*返回F的方法数*/
 		public int f;
 
 		public Info(int tr, int fa) {
@@ -35,11 +48,12 @@ public class Code05_BooleanEvaluation {
 		int t = 0;
 		int f = 0;
 		if (L == R) {
+			/*只有一个数，就看这个数是T还是F*/
 			t = str[L] == '1' ? 1 : 0;
 			f = str[L] == '0' ? 1 : 0;
 		} else { // L..R >=3
-			// 每一个种逻辑符号，split枚举的东西
 			// 都去试试最后结合
+			/*split：枚举str中的逻辑符号，L/R位置一定是数字，不能枚举，步长为2*/
 			for (int split = L + 1; split < R; split += 2) {
 				Info leftInfo = func(str, L, split - 1, dp);
 				Info rightInfo = func(str, split + 1, R, dp);
@@ -49,6 +63,7 @@ public class Code05_BooleanEvaluation {
 				int d = rightInfo.f;
 				switch (str[split]) {
 				case '&':
+					/*注意是累加*/
 					t += a * c;
 					f += b * c + b * d + a * d;
 					break;

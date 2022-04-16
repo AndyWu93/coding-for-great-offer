@@ -6,24 +6,37 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.TreeSet;
 
+/**
+ * Top K Frequent Words II
+ * Implement three methods for Topk Class:
+ * TopK(k). The constructor.
+ * add(word). Add a new word.
+ * topk(). Get the current top k frequent words.
+ *
+ * 加强堆
+ */
 // 本题测试链接：https://www.lintcode.com/problem/top-k-frequent-words-ii/
 // 以上的代码不要粘贴, 把以下的代码粘贴进java环境编辑器
 // 把类名和构造方法名改成TopK, 可以直接通过
 public class Code02_TopK {
 
 	private Node[] heap;
+	/*堆实际数据量*/
 	private int heapSize;
 	// 词频表   key  abc   value  (abc,7)
 	private HashMap<String, Node> strNodeMap;
+	/*反向索引表*/
 	private HashMap<Node, Integer> nodeIndexMap;
+	/*堆比较的逻辑*/
 	private NodeHeapComp comp;
+	/*为了收集topK时降低一点复杂度,也可以不要，最后把堆里面的数排个序返回*/
 	private TreeSet<Node> treeSet;
 	
 	public Code02_TopK(int K) {
 		heap = new Node[K];
 		heapSize = 0;
-		strNodeMap = new HashMap<String, Node>();
-		nodeIndexMap = new HashMap<Node, Integer>();
+		strNodeMap = new HashMap<>();
+		nodeIndexMap = new HashMap<>();
 		comp = new NodeHeapComp();
 		treeSet = new TreeSet<>(new NodeTreeSetComp());
 	}
@@ -38,6 +51,9 @@ public class Code02_TopK {
 		}
 	}
 
+	/*
+	* 堆的比较器，按次数排序，次数相等时顺序要固定
+	* */
 	public static class NodeHeapComp implements Comparator<Node> {
 
 		@Override
@@ -56,14 +72,21 @@ public class Code02_TopK {
 
 	}
 
+	/*
+	* 复杂度O(logK)
+	* */
 	public void add(String str) {
 		if (heap.length == 0) {
+			/*如果求top0，那什么字符串都不用接受*/
 			return;
 		}
 		// str   找到对应节点  curNode
 		Node curNode = null;
 		// 对应节点  curNode  在堆上的位置
 		int preIndex = -1;
+		/*
+		* 1. 看str在不在反向索引表中，拿到索引
+		* */
 		if (!strNodeMap.containsKey(str)) {
 			curNode = new Node(str, 1);
 			strNodeMap.put(str, curNode);
@@ -79,7 +102,11 @@ public class Code02_TopK {
 			curNode.times++;
 			preIndex = nodeIndexMap.get(curNode);
 		}
+		/*
+		* 2. 根据当前str在不在堆上，决定要不要进堆
+		* */
 		if (preIndex == -1) {
+			/*不在堆上，看堆有没有满，决定要不要进堆*/
 			if (heapSize == heap.length) {
 				if (comp.compare(heap[0], curNode) < 0) {
 					treeSet.remove(heap[0]);
@@ -96,6 +123,7 @@ public class Code02_TopK {
 				heapInsert(heapSize++);
 			}
 		} else {
+			/*在堆上，需要调整位置*/
 			treeSet.add(curNode);
 			heapify(preIndex, heapSize);
 		}
@@ -143,6 +171,9 @@ public class Code02_TopK {
 		}
 	}
 
+	/*
+	* 堆里面数据的交换，尤其要记得反向索引的交换
+	* */
 	private void swap(int index1, int index2) {
 		nodeIndexMap.put(heap[index1], index2);
 		nodeIndexMap.put(heap[index2], index1);
