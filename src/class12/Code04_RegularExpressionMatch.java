@@ -1,16 +1,35 @@
 package class12;
 
+/**
+ * Given an input string s and a pattern p, implement regular expression matching with support for '.' and '*' where:
+ *
+ * '.' Matches any single character.​​​​
+ * '*' Matches zero or more of the preceding element.
+ * The matching should cover the entire input string (not partial).
+ *
+ * 题意：正则匹配，如果能匹配返回true，否则false
+ * 		正则规则：
+ * 			. 可以代表任何字符
+ * 			* 不能单独存在，需要和前面一个字符x一起作为一个整体，这个整体代表0个或者多个x字符
+ * 解题：
+ * 	本题是动态规划，样本对应模型
+ * 	暴力递归+缓存法能过。
+ *
+ */
 // 测试链接 : https://leetcode.com/problems/regular-expression-matching/
 public class Code04_RegularExpressionMatch {
 
+	/*
+	* 校验字符
+	* */
 	public static boolean isValid(char[] s, char[] e) {
-		// s中不能有'.' or '*'
+		/* s中不能有'.' or '*' */
 		for (int i = 0; i < s.length; i++) {
 			if (s[i] == '*' || s[i] == '.') {
 				return false;
 			}
 		}
-		// 开头的e[0]不能是'*'，没有相邻的'*'
+		/* 开头的e[0]不能是'*'，没有相邻的'*' */
 		for (int i = 0; i < e.length; i++) {
 			if (e[i] == '*' && (i == 0 || e[i - 1] == '*')) {
 				return false;
@@ -19,7 +38,9 @@ public class Code04_RegularExpressionMatch {
 		return true;
 	}
 
-	// 初始尝试版本，不包含斜率优化
+	/**
+	 * 初始尝试版本，暴力递归
+	 */
 	public static boolean isMatch1(String str, String exp) {
 		if (str == null || exp == null) {
 			return false;
@@ -29,22 +50,41 @@ public class Code04_RegularExpressionMatch {
 		return isValid(s, e) && process(s, e, 0, 0);
 	}
 
-	// str[si.....] 能不能被 exp[ei.....]配出来！ true false
+	/*
+	* str[si.....] 能不能被 exp[ei.....]配出来?
+	* */
 	public static boolean process(char[] s, char[] e, int si, int ei) {
-		if (ei == e.length) { // exp 没了 str？
+		if (ei == e.length) {
+			/*exp 没了 str如果还有，那肯定不行*/
 			return si == s.length;
 		}
-		// exp[ei]还有字符
-		// ei + 1位置的字符，不是*
+		/*
+		* exp[ei]还有字符,分两种情况讨论
+		* 1. ei + 1位置的字符，不是*
+		* 2. ei + 1位置的字符，是*
+		* */
 		if (ei + 1 == e.length || e[ei + 1] != '*') {
-			// ei + 1 不是*
-			// str[si] 必须和 exp[ei] 能配上！
+			/*
+			* ei + 1 不是*
+			* str[si] 必须和 exp[ei] 能配上！
+			* si != s.length ：s不能结束
+			* e[ei] == s[si] || e[ei] == '.'：能够匹配
+			* process(s, e, si + 1, ei + 1)：且后面的位置也能匹配
+			* */
 			return si != s.length && (e[ei] == s[si] || e[ei] == '.') && process(s, e, si + 1, ei + 1);
 		}
-		// exp[ei]还有字符
-		// ei + 1位置的字符，是*!
+		/*
+		* ei + 1位置的字符，是*
+		* s如果结束，或者此时不匹配，那exp此时的字符可以和后面的*变成空，继续exp下面2个位置去匹配：process(s, e, si, ei + 2);
+		* 否则
+		* 	先把exp此时的字符和后面的*变成空，让后面的去匹配，能匹配的话直接返回true
+		* 	后面的不能匹配的话，si右移一位，即让（x*）变成一个x，后面的继续匹配
+		* 直到当前两个位置不匹配了，或者si到底了，那此时的si再和exp下面2个位置去匹配
+		* */
 		while (si != s.length && (e[ei] == s[si] || e[ei] == '.')) {
+			/*注意每次进入是si的值都不一样*/
 			if (process(s, e, si, ei + 2)) {
+				/*只有要一种情况返回true，就可以返回了，后面的不用看了*/
 				return true;
 			}
 			si++;
@@ -52,7 +92,10 @@ public class Code04_RegularExpressionMatch {
 		return process(s, e, si, ei + 2);
 	}
 
-	// 改记忆化搜索+斜率优化
+	/**
+	 * 改记忆化搜索已经能过了
+	 * 改记忆化搜索+斜率优化
+	 */
 	public static boolean isMatch2(String str, String exp) {
 		if (str == null || exp == null) {
 			return false;
@@ -80,12 +123,32 @@ public class Code04_RegularExpressionMatch {
 			if (ei + 1 == e.length || e[ei + 1] != '*') {
 				ans = si != s.length && (e[ei] == s[si] || e[ei] == '.') && process2(s, e, si + 1, ei + 1, dp);
 			} else {
+//				while (si != s.length && (e[ei] == s[si] || e[ei] == '.')) {
+//					if (process2(s, e, si, ei + 2,dp)) {
+//						ans =  true;
+//						break;
+//					}
+//					si++;
+//				}
+//				ans = ans || process2(s, e, si, ei + 2,dp);
+
+				/*
+				* 上面的代码如何斜率优化？
+				* 可以通过列举f函数来看，有没有可以复用的
+				* */
 				if (si == s.length) { // ei ei+1 *
 					ans = process2(s, e, si, ei + 2, dp);
 				} else { // si没结束
 					if (s[si] != e[ei] && e[ei] != '.') {
 						ans = process2(s, e, si, ei + 2, dp);
 					} else { // s[si] 可以和 e[ei]配上
+						/*
+						* 省掉了while：
+						* 如果此时能够匹配，那
+						* 	si不动，ei去下面2个位置（x*变成了空）
+						* 或者
+						* 	si动一下，ei不变（x*变成了一个目标字符,ei为什么可以不用动？因为还可以让x*变成2个目标字符）
+						* */
 						ans = process2(s, e, si, ei + 2, dp) || process2(s, e, si + 1, ei, dp);
 					}
 				}
@@ -95,7 +158,10 @@ public class Code04_RegularExpressionMatch {
 		return ans;
 	}
 
-	// 动态规划版本 + 斜率优化
+	/**
+	 * 动态规划版本 + 斜率优化
+	 * 可以不看
+	 */
 	public static boolean isMatch3(String str, String pattern) {
 		if (str == null || pattern == null) {
 			return false;
