@@ -1,5 +1,21 @@
 package class13;
 
+/**
+ * 旋变字符串
+ * 使用下面描述的算法可以扰乱字符串 s 得到字符串 t ：
+ * 如果字符串的长度为 1 ，算法停止
+ * 如果字符串的长度 > 1 ，执行下述步骤：
+ * 在一个随机下标处将字符串分割成两个非空的子字符串。即，如果已知字符串 s ，则可以将其分成两个子字符串 x 和 y ，且满足 s = x + y 。
+ * 随机 决定是要「交换两个子字符串」还是要「保持这两个子字符串的顺序不变」。即，在执行这一步骤之后，s 可能是 s = x + y 或者 s = y + x 。
+ * 在 x 和 y 这两个子字符串上继续从步骤 1 开始递归执行此算法。
+ * 给你两个 长度相等 的字符串 s1 和 s2，判断 s2 是否是 s1 的扰乱字符串。如果是，返回 true ；否则，返回 false 。
+ *
+ * 题意：将字符串str1以二叉树的形式层层分解，直到单个字符，任何一个节点的左右孩子互换位置，重组以后形成的str2被称为是str1的旋变串
+ * 给定了两个str，问这两个str是否互为旋变串
+ * 解题
+ * 	本题2个str，是一个明显的样本对应模型，但是本题推严格的位置依赖比较难，可以用递归+缓存实现
+ * 	实现函数：boolean process(str1,L1,str2,L2,N):两个str，给定参数范围内的子串是否互为旋变串
+ */
 // 本题测试链接 : https://leetcode.com/problems/scramble-string/
 public class Code03_ScrambleString {
 
@@ -95,6 +111,10 @@ public class Code03_ScrambleString {
 		return false;
 	}
 
+	/**
+	 * 递归+缓存：已经能过了
+	 * 复杂度：缓存O(N^4) * 枚举切割的位置O(N) = O(N^4)
+	 */
 	public static boolean isScramble2(String s1, String s2) {
 		if ((s1 == null && s2 != null) || (s1 != null && s2 == null)) {
 			return false;
@@ -118,20 +138,31 @@ public class Code03_ScrambleString {
 		return process2(str1, str2, 0, 0, N, dp);
 	}
 
+	/*
+	* str1str2，分别从L1L2开始，推size长度的子串是否互为旋变串
+	* dp：-1：false，1：true
+	* */
 	public static boolean process2(char[] str1, char[] str2, int L1, int L2, int size, int[][][] dp) {
 		if (dp[L1][L2][size] != 0) {
 			return dp[L1][L2][size] == 1;
 		}
 		boolean ans = false;
 		if (size == 1) {
+			/*只有一个数：相等的才是旋变串*/
 			ans = str1[L1] == str2[L2];
 		} else {
+			/*枚举str1左边部分的*/
 			for (int leftPart = 1; leftPart < size; leftPart++) {
-				if ((process2(str1, str2, L1, L2, leftPart, dp)
+				if (
+						/*str1左边与str2的左边、str1右边与str2的右边 互为旋变串*/
+						(process2(str1, str2, L1, L2, leftPart, dp)
 						&& process2(str1, str2, L1 + leftPart, L2 + leftPart, size - leftPart, dp))
-						|| (process2(str1, str2, L1, L2 + size - leftPart, leftPart, dp)
-								&& process2(str1, str2, L1 + leftPart, L2, size - leftPart, dp))) {
+						||
+						/*str1左边与str2的右边边、str1右边与str2的左边 互为旋变串*/
+						(process2(str1, str2, L1, L2 + size - leftPart, leftPart, dp)
+						&& process2(str1, str2, L1 + leftPart, L2, size - leftPart, dp))){
 					ans = true;
+					/*一种切割方式下的一种对应情况为true，就表示str1str2互为旋变串，可以直接return了*/
 					break;
 				}
 			}
