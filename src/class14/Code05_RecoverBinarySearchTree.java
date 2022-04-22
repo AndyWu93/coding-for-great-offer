@@ -2,6 +2,15 @@ package class14;
 
 import java.util.Stack;
 
+/**
+ * 给定一个棵搜索二叉树的头节点head，其中有两个节点错了，交换过来就能让整棵树重新变成搜索二叉树，怎么找到并调整正确？
+ * 解题：
+ * 如何找到这两个错误的点？
+ * 	中序遍历下，
+ * 	首次发生的降序的头部节点
+ * 	最后一次发生的降序的尾部节点
+ * 	以上两个节点是错误的节点
+ */
 // 本题测试链接 : https://leetcode.com/problems/recover-binary-search-tree/
 public class Code05_RecoverBinarySearchTree {
 
@@ -16,6 +25,9 @@ public class Code05_RecoverBinarySearchTree {
 		}
 	}
 
+	/**
+	 * 找到了2个错误的节点，直接交换值，code相对简单
+	 */
 	// 如果能过leetcode，只需要提交这个方法即可
 	// 但其实recoverTree2才是正路，只不过leetcode没有那么考
 	public static void recoverTree(TreeNode root) {
@@ -52,7 +64,9 @@ public class Code05_RecoverBinarySearchTree {
 				}
 			}
 			if (pre != null && pre.val >= cur.val) {
+				/*e1只保留首次发生降序的值，所以e1不为空的话就保留原来的值*/
 				e1 = e1 == null ? pre : e1;
+				/*e2不断更新，直到最后一次降序的值给了e2*/
 				e2 = cur;
 			}
 			pre = cur;
@@ -63,6 +77,9 @@ public class Code05_RecoverBinarySearchTree {
 		return ans;
 	}
 
+	/**
+	 * 找到了两个错误节点，交换节点，coding很难，有14中情况下的交换场景
+	 */
 	// 以下的方法，提交leetcode是通过不了的，但那是因为leetcode的验证方式有问题
 	// 但其实！以下的方法，才是正路！在结构上彻底交换两个节点，而不是值交换
 	public static TreeNode recoverTree2(TreeNode head) {
