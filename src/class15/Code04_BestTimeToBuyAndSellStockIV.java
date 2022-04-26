@@ -50,10 +50,8 @@ package class15;
 //leetcode 188
 public class Code04_BestTimeToBuyAndSellStockIV {
 
-
-
 	/**
-	 * 课后版本
+	 * 课后版本，这个版本比较好，整体最优的概念，是estTimeToBuyAndSellStockIII的升级版
 	 */
 	public static int maxProfit(int K, int[] prices) {
 		if (prices == null || prices.length == 0) {
@@ -63,19 +61,33 @@ public class Code04_BestTimeToBuyAndSellStockIV {
 		if (K >= N / 2) {
 			return allTrans(prices);
 		}
+		/*dp[tran][index]: 限制最多交易tran次，给定从0~index时间点的股票价格，最大利润是多少*/
 		int[][] dp = new int[K + 1][N];
-		int ans = 0;
+		//dp[0..n-1][0]=0 不交易没利润
+		//dp[0][0..k]=0 只停留在0号股价，交易多少次都没利润
 		for (int tran = 1; tran <= K; tran++) {
-			int pre = dp[tran][0];
-			int best = pre - prices[0];
+			/*
+			* best:之前最多tran-1次交易的最大利润，加上之后某一次最佳买入时间点，整体最优
+			* */
+			int best = dp[tran-1][0] - prices[0];
 			for (int index = 1; index < N; index++) {
-				pre = dp[tran - 1][index];
+				/*
+				* 第tran次交易做决策：
+				* dp[tran][index - 1]：本次价格不参与交易
+				* prices[index] + best：本次价格参与交易
+				* 两者取大
+				* */
 				dp[tran][index] = Math.max(dp[tran][index - 1], prices[index] + best);
-				best = Math.max(best, pre - prices[index]);
-				ans = Math.max(dp[tran][index], ans);
+				/*
+				* 为下次的决策做准备：
+				* best：之前的最优
+				* dp[tran - 1][index] - prices[index]：第tran-1次交易的最大利润，加上本次买入
+				* 两者取大
+				* */
+				best = Math.max(best, dp[tran - 1][index] - prices[index]);
 			}
 		}
-		return ans;
+		return dp[K][N-1];
 	}
 
 	public static int allTrans(int[] prices) {
@@ -85,37 +97,6 @@ public class Code04_BestTimeToBuyAndSellStockIV {
 		}
 		return ans;
 	}
-
-	/**
-     * 课上写的版本，对了
-	 */
-	public static int maxProfit2(int K, int[] arr) {
-		if (arr == null || arr.length == 0 || K < 1) {
-			return 0;
-		}
-		int N = arr.length;
-		if (K >= N / 2) {
-			return allTrans(arr);
-		}
-		int[][] dp = new int[N][K + 1];
-		// dp[...][0] = 0
-		// dp[0][...] = arr[0.0] 0
-		for (int j = 1; j <= K; j++) {
-			// dp[1][j]
-			int p1 = dp[0][j];
-			int best = Math.max(dp[1][j - 1] - arr[1], dp[0][j - 1] - arr[0]);
-			dp[1][j] = Math.max(p1, best + arr[1]);
-			// dp[1][j] 准备好一些枚举，接下来准备好的枚举
-			for (int i = 2; i < N; i++) {
-				p1 = dp[i - 1][j];
-				int newP = dp[i][j - 1] - arr[i];
-				best = Math.max(newP, best);
-				dp[i][j] = Math.max(p1, best + arr[i]);
-			}
-		}
-		return dp[N - 1][K];
-	}
-
 
 
 	/**
@@ -154,6 +135,7 @@ public class Code04_BestTimeToBuyAndSellStockIV {
 		return dp[N-1][K];
 	}
 
+
 	/**
 	 * maxProfit3空间压缩
 	 */
@@ -180,6 +162,38 @@ public class Code04_BestTimeToBuyAndSellStockIV {
 		}
 		return ans;
 	}
+
+
+	/**
+     * 课上写的版本，对了
+	 */
+	public static int maxProfit2(int K, int[] arr) {
+		if (arr == null || arr.length == 0 || K < 1) {
+			return 0;
+		}
+		int N = arr.length;
+		if (K >= N / 2) {
+			return allTrans(arr);
+		}
+		int[][] dp = new int[N][K + 1];
+		// dp[...][0] = 0
+		// dp[0][...] = arr[0.0] 0
+		for (int j = 1; j <= K; j++) {
+			// dp[1][j]
+			int p1 = dp[0][j];
+			int best = Math.max(dp[1][j - 1] - arr[1], dp[0][j - 1] - arr[0]);
+			dp[1][j] = Math.max(p1, best + arr[1]);
+			// dp[1][j] 准备好一些枚举，接下来准备好的枚举
+			for (int i = 2; i < N; i++) {
+				p1 = dp[i - 1][j];
+				int newP = dp[i][j - 1] - arr[i];
+				best = Math.max(newP, best);
+				dp[i][j] = Math.max(p1, best + arr[i]);
+			}
+		}
+		return dp[N - 1][K];
+	}
+
 
 	public static void main(String[] args) {
 		int[] test = { 4, 1, 231, 21, 12, 312, 312, 3, 5, 2, 423, 43, 146 };

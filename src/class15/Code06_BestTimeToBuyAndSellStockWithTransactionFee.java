@@ -14,7 +14,7 @@ public class Code06_BestTimeToBuyAndSellStockWithTransactionFee {
 		}
 		int N = arr.length;
 		/*因为在i位置可以无限买卖,就可以在i位置直接计算，所以不需要数组，用一个变量就好了*/
-		// 0..0   0 -[0] - fee
+		// 0..0   0 -[0] - fee 交易费算在买入里
 		int bestbuy = -arr[0] - fee;
 		// 0..0  卖  0
 		int bestsell = 0;
