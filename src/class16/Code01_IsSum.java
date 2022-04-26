@@ -3,6 +3,17 @@ package class16;
 import java.util.HashMap;
 import java.util.HashSet;
 
+/**
+ * 给定一个有正、有负、有0的数组arr，
+ * 给定一个整数k，
+ * 返回arr的子集是否能累加出k
+ * 1）正常怎么做？
+ * 2）如果arr中的数值很大，但是arr的长度不大，怎么做？
+ *
+ * 解题：
+ * 1）存在负数区域的背包怎么办？负数区域依次平移
+ * 2）分治
+ */
 // 这道题是一个小小的补充，课上没有讲
 // 但是如果你听过体系学习班动态规划专题和本节课的话
 // 这道题就是一道水题
@@ -63,11 +74,15 @@ public class Code01_IsSum {
 		return ans;
 	}
 
+	/**
+	 * 第一问
+	 */
 	// arr中的值可能为正，可能为负，可能为0
 	// 自由选择arr中的数字，能不能累加得到sum
 	// 经典动态规划
 	public static boolean isSum3(int[] arr, int sum) {
 		if (sum == 0) {
+			/*一个数也不取*/
 			return true;
 		}
 		// sum != 0
@@ -81,11 +96,10 @@ public class Code01_IsSum {
 			min += num < 0 ? num : 0;
 			max += num > 0 ? num : 0;
 		}
-		// min~max
+		/*sum的范围一定要再min~max，否则搞不出来*/
 		if (sum < min || sum > max) {
 			return false;
 		}
-
 		// min <= sum <= max
 		int N = arr.length;
 		// dp[i][j]
@@ -95,6 +109,10 @@ public class Code01_IsSum {
 		// 
 		// dp[0][-min] -> dp[0][7] -> dp[0][0]
 		boolean[][] dp = new boolean[N][max - min + 1];
+		/*
+		* 以下所有的dp[i][j],都向右平移了math.abs(min)的单位
+		* 即dp[i][j]需要写成dp[i][j+math.abs(min)],即dp[i][j-min]
+		* */
 		// dp[0][0] = true
 		dp[0][-min] = true;
 		// dp[0][arr[0]] = true
@@ -112,6 +130,9 @@ public class Code01_IsSum {
 		return dp[N - 1][sum - min];
 	}
 
+	/**
+	 * 第二问
+	 */
 	// arr中的值可能为正，可能为负，可能为0
 	// 自由选择arr中的数字，能不能累加得到sum
 	// 分治的方法
@@ -125,12 +146,14 @@ public class Code01_IsSum {
 			return false;
 		}
 		if (arr.length == 1) {
+			/*arr里只有1个数单独判断一下，因为分治最少需要2个数*/
 			return arr[0] == sum;
 		}
 		int N = arr.length;
 		int mid = N >> 1;
 		HashSet<Integer> leftSum = new HashSet<>();
 		HashSet<Integer> rightSum = new HashSet<>();
+		/*左右各自收集所有的累加组合*/
 		// 0...mid-1
 		process4(arr, 0, mid, 0, leftSum);
 		// mid..N-1
