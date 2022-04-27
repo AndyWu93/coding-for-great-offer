@@ -1,5 +1,10 @@
 package class17;
 
+/**
+ * 给定两个字符串S和T，返回S的所有子序列中有多少个子序列的字面值等于T
+ * 解题：
+ * 	样本对应模型
+ */
 // 测试链接 : https://leetcode-cn.com/problems/21dk04/
 public class Code04_DistinctSubseq {
 
@@ -23,6 +28,9 @@ public class Code04_DistinctSubseq {
 		return res;
 	}
 
+	/**
+	 * dp[i][j] : s只拿前i个字符做子序列，有多少个子序列，字面值等于T的前j个字符的前缀串
+	 */
 	// S[...i]的所有子序列中，包含多少个字面值等于T[...j]这个字符串的子序列
 	// 记为dp[i][j]
 	// 可能性1）S[...i]的所有子序列中，都不以s[i]结尾，则dp[i][j]肯定包含dp[i-1][j]
@@ -67,6 +75,10 @@ public class Code04_DistinctSubseq {
 		return dp[t.length];
 	}
 
+	/**
+	 * 课上版本
+	 * dp[i][j]: s[0..i]中有多少个子序列等于t[0..j]
+	 */
 	public static int dp(String S, String T) {
 		char[] s = S.toCharArray();
 		char[] t = T.toCharArray();
@@ -75,13 +87,17 @@ public class Code04_DistinctSubseq {
 		int[][] dp = new int[N][M];
 		// s[0..0] T[0..0] dp[0][0]
 		dp[0][0] = s[0] == t[0] ? 1 : 0;
+		/*第一行后面的不用填了，s的长度都不够*/
 		for (int i = 1; i < N; i++) {
 			dp[i][0] = s[i] == t[0] ? (dp[i - 1][0] + 1) : dp[i - 1][0];
 		}
 		for (int i = 1; i < N; i++) {
+			/*注意边界: t字符的长度不能大于s，t也不能越界*/
 			for (int j = 1; j <= Math.min(i, M - 1); j++) {
+				/*不要i位置的字符*/
 				dp[i][j] = dp[i - 1][j];
 				if (s[i] == t[j]) {
+					/*要i位置的字符，必须相等*/
 					dp[i][j] += dp[i - 1][j - 1];
 				}
 			}
