@@ -4,6 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
+/**
+ * 如果只给定一个二叉树前序遍历数组pre和中序遍历数组in，能否不重建树，而直接生成这个二叉树的后序数组并返回，已知二叉树中没有重复值
+ *
+ * 解题：
+ * 	本题考查递归能力
+ * 	找出头节点、左树范围、右树范围，去生成后序遍历的左范围、右范围、头节点
+ */
 public class Code01_PreAndInArrayToPosArray {
 
 	public static int[] zuo(int[] pre, int[] in) {
@@ -11,6 +18,7 @@ public class Code01_PreAndInArrayToPosArray {
 			return null;
 		}
 		int N = pre.length;
+		/*用一张表，把中序遍历中每个值的index记一下*/
 		HashMap<Integer, Integer> inMap = new HashMap<>();
 		for (int i = 0; i < N; i++) {
 			inMap.put(in[i], i);
@@ -20,17 +28,28 @@ public class Code01_PreAndInArrayToPosArray {
 		return pos;
 	}
 
+	/*
+	* 找出头节点、左树范围、右树范围，去生成后序遍历的左范围、右范围、头节点
+	* L1L2L3
+	* R1R2R3
+	* 这3个范围一定等长
+	* */
 	public static void func(int[] pre, int L1, int R1, int[] in, int L2, int R2, int[] pos, int L3, int R3,
 			HashMap<Integer, Integer> inMap) {
 		if (L1 > R1) {
 			return;
 		}
 		if (L1 == R1) {
+			/*只剩一个数，直接给后续中的一个位置*/
 			pos[L3] = pre[L1];
 		} else {
+			/*先把先序的第一个数，即头节点给后续的尾巴*/
 			pos[R3] = pre[L1];
+			/*拿到头节点的位置，就能知道左树范围和右树范围*/
 			int index = inMap.get(pre[L1]);
+			/*在pre和in中把左树范围圈出来，放到pos的左树范围中去*/
 			func(pre, L1 + 1, L1 + index - L2, in, L2, index - 1, pos, L3, L3 + index - L2 - 1, inMap);
+			/*在pre和in中把右树范围圈出来，放到pos的右树范围中去*/
 			func(pre, L1 + index - L2 + 1, R1, in, index + 1, R2, pos, L3 + index - L2, R3 - 1, inMap);
 		}
 	}
