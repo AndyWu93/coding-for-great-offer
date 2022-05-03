@@ -23,6 +23,8 @@ import java.util.HashMap;
  * 	以上时间复杂度为O(logN)
  * 	该dfs序可以做什么？
  * 		dfs序作为一组连续的编号，借助线段树，可以轻易的实现某个子树的所有节点，或者两个节点之间的所有节点，查询和修改
+ * 	dfs中线段树的操作复杂度为O(logN)
+ * 	所以整体复杂度为O((logN)^2)
  */
 public class TreeChainPartition {
 
