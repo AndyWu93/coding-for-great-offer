@@ -5,6 +5,34 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 
+/**
+ * 找到arr中出现次数超过一半的数
+ * 思路：出现次数超过一半的数一定只有一个
+ * 如果有一种机制，一次删除两个不同值的数，最后没数可以删了剩下来的一定包含出现次数超过一半的数（因为这个数很多，不怕被删）
+ * 如何一次删除两个不同的数？
+ * 准备一个候选candidate，一个变量计次
+ * 遍历到i位置，
+ * 如果没有候选，或者之前的候选计次为0了，i位置数作为新候选
+ * 如果有候选，i位置数与候选比较，相同计次+1，不同计次-1（-1就代表删除两个不同的数）
+ * 最后剩下来的candidate再验证一下出现了多少次
+ * 时间复杂度O(N)
+ * 空间复杂度O(1)
+ *
+ *
+ * 进阶：找到arr中出现次数超过n/k次的数
+ * 思路：
+ * 出现次数超过n/2的数一定只有1个
+ * 出现次数超过n/3的数一定只有2个
+ * ...
+ * 出现次数超过n/k的数一定只有k-1个
+ * 准备一个候选池，里面包含k-1个位置
+ * 候选不满时，立候选，给初始血量1
+ * 遇到候选里面的数，hp+1
+ * 遇到不是候选里面的数，候选又满了，这时所有的候选hp都-1，陪葬当前遇到的数，相当于一次删除了k-1个数
+ * 最后候选中的数一定有出现n/K次的，遍历一下arr确认
+ * 时间复杂度O(N*K)(因为要遍历候选区给所有优选-1)
+ * 空间复杂度O(K)
+ */
 public class Code04_FindKMajority {
 
 	public static void printHalfMajor(int[] arr) {
@@ -12,18 +40,22 @@ public class Code04_FindKMajority {
 		int HP = 0;
 		for (int i = 0; i < arr.length; i++) {
 			if (HP == 0) {
+				/*hp=0表示没有候选了，立当前数为候选，初始血量1*/
 				cand = arr[i];
 				HP = 1;
 			} else if (arr[i] == cand) {
 				HP++;
 			} else {
+				/*这里相当于删除了当前数和候选一次*/
 				HP--;
 			}
 		}
+		/*最终没有候选剩下来*/
 		if(HP == 0) {
 			System.out.println("no such number.");
 			return;
 		}
+		/*有候选剩下来，遍历一遍arr，计数，判断是否水王*/
 		HP = 0;
 		for (int i = 0; i < arr.length; i++) {
 			if (arr[i] == cand) {
@@ -37,6 +69,9 @@ public class Code04_FindKMajority {
 		}
 	}
 
+	/**
+     * 进阶
+	 */
 	public static void printKMajor(int[] arr, int K) {
 		if (K < 2) {
 			System.out.println("the value of K is invalid.");
@@ -56,10 +91,6 @@ public class Code04_FindKMajority {
 			}
 		}
 		// 所有可能的候选，都在cands表中！遍历一遍arr，每个候选收集真实次数
-		
-		
-		
-		
 		HashMap<Integer, Integer> reals = getReals(arr, cands);
 		boolean hasPrint = false;
 		for (Entry<Integer, Integer> set : cands.entrySet()) {
@@ -78,6 +109,7 @@ public class Code04_FindKMajority {
 			Integer key = set.getKey();
 			Integer value = set.getValue();
 			if (value == 1) {
+				/*收集一下值为1的，最后要删掉*/
 				removeList.add(key);
 			}
 			map.put(key, value - 1);
