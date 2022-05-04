@@ -3,18 +3,28 @@ package class24;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * N * M的棋盘（N和M是输入参数），
+ * 每种颜色的格子数必须相同的，上下左右的格子算相邻，
+ * 相邻格子染的颜色必须不同，所有格子必须染色，返回至少多少种颜色可以完成任务
+ *
+ * 解题：打表找规律
+ */
 public class Code04_Painting {
-	// N * M的棋盘
-	// 每种颜色的格子数必须相同的
-	// 相邻格子染的颜色必须不同
-	// 所有格子必须染色
-	// 返回至少多少种颜色可以完成任务
 
+	/**
+	 * 打表后得到
+	 * i是N*M的最小质因子
+	 */
 	public static int minColors(int N, int M) {
-		// 颜色数量是i
+		/*枚举颜色数量是i*/
 		for (int i = 2; i < N * M; i++) {
 			int[][] matrix = new int[N][M];
 			// 下面这一句可知，需要的最少颜色数i，一定是N*M的某个因子
+			/*
+			* (N * M) % i == 0 ：
+			* 	按照题意，每种颜色的格子数相同，所以N * M一定是i的倍数，即i一定是N * M的因子
+			* */
 			if ((N * M) % i == 0 && can(matrix, N, M, i)) {
 				return i;
 			}
@@ -22,6 +32,9 @@ public class Code04_Painting {
 		return N * M;
 	}
 
+	/*
+	* N*M的matrix，有pNum中颜色的格子，每个颜色格子一样多，能不能按要求把matrix填满
+	* */
 	// 在matrix上染色，返回只用pNum种颜色是否可以做到要求
 	public static boolean can(int[][] matrix, int N, int M, int pNum) {
 		int all = N * M;

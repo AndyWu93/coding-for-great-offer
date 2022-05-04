@@ -1,5 +1,21 @@
 package class24;
 
+/**
+ * 字节面试题
+ * 正常的里程表会依次显示自然数表示里程
+ * 吉祥的里程表会忽略含有4的数字而跳到下一个完全不含有4的数
+ * 正常：1 2 3 4 5 6 7 8  9 10 11 12 13 14 15
+ * 吉祥：1 2 3 5 6 7 8 9 10 11 12 13 15 16 17 ... 38 39 50 51 52 53 55
+ * 给定一个吉祥里程表的数字num(当然这个数字中不含有4)
+ * 返回这个数字代表的真实里程
+ *
+ * 解题：本题树位dp
+ * 比如求72351的真实数字
+ * 这个真实数字可以由3部分相加组成
+ * 第一部分：72351是5位数，那么4位数的吉祥数字一共有几个
+ * 第二部分：首位1~6（不含4）确定后，剩下位随意变，吉祥数字有几个
+ * 第三部分：首位确定了，2351、351、51、1，这些数字讨论他们自己的首位0~x(不含4)确定后，剩下位随意变，吉祥数字有几个
+ */
 // 里程表不能含有4，给定一个数num，返回他是里程表里的第几个
 public class Code03_NotContains4 {
 
@@ -24,6 +40,7 @@ public class Code03_NotContains4 {
 		return true;
 	}
 
+	// 生成一张表，arr[i]: i-1位的吉祥数字有几个（吉祥数字里可以包含0但是不可以包含4）
 	// arr[1] : 比1位数还少1位，有几个数(数字里可以包含0但是不可以包含4)？0个
 	// arr[2] : 比2位数还少1位，有几个数(数字里可以包含0但是不可以包含4)？9个
 	// 1 -> 0 1 2 3 - 5 6 7 8 9 = 9
@@ -40,21 +57,35 @@ public class Code03_NotContains4 {
 			3486784401L, 31381059609L, 282429536481L, 2541865828329L, 22876792454961L, 205891132094649L,
 			1853020188851841L, 16677181699666569L, 150094635296999121L, 1350851717672992089L };
 
+	/**
+	 * 复杂度：
+	 * O(lgN)
+	 */
 	// num中一定没有4这个数字
 	public static long notContains4Nums2(long num) {
 		if (num <= 0) {
 			return 0;
 		}
-		// num的十进制位数，len
+		/*计算出num的十进制位数*/
 		int len = decimalLength(num);
 		// 35621
 		// 10000
+		/*拿到长度为len，首位1，其他都是0的数，这个数用来获取num的首位数字*/
 		long offset = offset(len);
 
 		// 第一位数字
 		long first = num / offset;
+		/*
+		* arr[len] - 1 :
+		* 	位数len-1的吉祥数个数，不含0
+		* (first - (first < 4 ? 1 : 2)) * arr[len]:
+		* 	首位1~x(除掉4) * 其他位随意变，即arr[len]
+		* process(num % offset, offset / 10, len - 1):
+		* 	首位确定好以后，剩下的第三部分计算一下
+		* */
 		return arr[len] - 1 + (first - (first < 4 ? 1 : 2)) * arr[len] + process(num % offset, offset / 10, len - 1);
 	}
+
 
 	// num之前，有开头！
 	// 在算0的情况下，num是第几个数字
@@ -65,9 +96,18 @@ public class Code03_NotContains4 {
 	// len
 	public static long process(long num, long offset, int len) {
 		if (len == 0) {
+			/*base case，也可以写成num==0, 算1个*/
 			return 1;
 		}
 		long first = num / offset;
+		/*
+		* (first < 4 ? first : (first - 1)) * arr[len]:
+		* 	这里首位是0~x(不含4)，位数首位可以取到0，因为num前面有数字
+		* process(num % offset, offset / 10, len - 1)：
+		* 	砍掉头部后继续算
+		* 这里为什么没有第一部分的相加了？
+		* 	第一部分在上面的主函数已经算过了，这里不用算第二遍，这里只是在枚举首位，其他位随意变的情况下，计算吉祥数个数
+		* */
 		return (first < 4 ? first : (first - 1)) * arr[len] + process(num % offset, offset / 10, len - 1);
 	}
 

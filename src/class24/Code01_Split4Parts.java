@@ -3,6 +3,20 @@ package class24;
 import java.util.HashMap;
 import java.util.HashSet;
 
+/**
+ * 给定一个正数数组arr，长度一定大于6（>=7），一定要选3个数字做分割点，从而分出4个部分，并且每部分都有数
+ * 分割点的数字直接删除，不属于任何4个部分中的任何一个。返回有没有可能分出的4个部分累加和一样大
+ * 如：{3,2,3,7,4,4,3,1,1,6,7,1,5,2}。可以分成{3,2,3}、{4,4}、{1,1,6}、{1,5,2}。分割点是不算的！
+ *
+ * 题意： 将正数数组arr，切成4个相等的部分，切的位置不算。切的位置一定是arr[某个位置]
+ * 思路：
+ * 遍历arr枚举第一刀的位置，第一刀只能从1位置开始，到n-6位置位置，因为要给前面留一个数，后面要留2刀和3个数
+ * 第一刀来到了i位置
+ * 1. 需要知道该位置的leftSum，可以用一个变量，在遍历arr时不断累积leftSum
+ * 2. 需要知道有没有第二刀以及其位置，按照题意，第二刀的leftSum=第一刀的leftSum * 2 + arr[i];可以准备一个预处理map将每个位置的leftSum和index
+ * 放入map，方便快速查找
+ * 3. 如果3刀都找到了，切最后一块数的和也一样，返回true
+ */
 public class Code01_Split4Parts {
 
 	public static boolean canSplits1(int[] arr) {
@@ -40,14 +54,18 @@ public class Code01_Split4Parts {
 		return false;
 	}
 
+	/**
+	 * 最优解
+	 */
 	public static boolean canSplits2(int[] arr) {
 		if (arr == null || arr.length < 7) {
 			return false;
 		}
-		// key 某一个累加和， value出现的位置
+		/*key 某一个累加和， 累加和为key的下一个位置*/
 		HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
 		int sum = arr[0];
 		for (int i = 1; i < arr.length; i++) {
+			/*此时累加和是arr[0],但加入的是1*/
 			map.put(sum, i);
 			sum += arr[i];
 		}
@@ -64,6 +82,7 @@ public class Code01_Split4Parts {
 					}
 				}
 			}
+			/*更新lsum，接下里枚举下个第一刀*/
 			lsum += arr[s1];
 		}
 		return false;
