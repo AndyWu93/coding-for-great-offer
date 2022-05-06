@@ -5,18 +5,32 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * 二维数组board中能走出words中多少个单词（一个单词里不能走重复位置）
+ * 解题：
+ * 	本题考查递归剪枝（应该指减少递归支路）的优化
+ * 整体思路：
+ * 	枚举board中所有位置，往各个方向走，收集答案
+ * 	优化1 不能重复：
+ * 	可以复用board，来到board[i][j]位置，把该位置置0，在后续递归方法中来到该位置就看下是不是0，
+ * 	当前方法结束前，在把原来的字符放回去
+ * 	优化2 当前位置是否需要收集答案：
+ * 	使用前缀树，将所有words加入前缀树，递归时同步来到前缀树的位置，看是否有该方向的路
+ * 	优化3 board特别大，words比较少，如何避免收集答案时发现之前已近收集过：
+ * 	使用前缀树的pass，收集成功一个word，不仅减end，沿途pass也减掉。以后再来到一个点，如果pass已经没有了，就直接return
+ */
 // 本题测试链接 : https://leetcode.com/problems/word-search-ii/
 public class Code02_WordSearchII {
 
 	public static class TrieNode {
 		public TrieNode[] nexts;
 		public int pass;
-		public boolean end;
+		public int end;
 
 		public TrieNode() {
 			nexts = new TrieNode[26];
 			pass = 0;
-			end = false;
+			end = 0;
 		}
 
 	}
@@ -34,7 +48,7 @@ public class Code02_WordSearchII {
 			node = node.nexts[index];
 			node.pass++;
 		}
-		node.end = true;
+		node.end++;
 	}
 
 	public static String generatePath(LinkedList<Character> path) {
@@ -46,8 +60,12 @@ public class Code02_WordSearchII {
 		return String.valueOf(str);
 	}
 
+	/**
+	 * 最优解
+	 */
 	public static List<String> findWords(char[][] board, String[] words) {
 		TrieNode head = new TrieNode(); // 前缀树最顶端的头
+		/*没有重复值的前缀树*/
 		HashSet<String> set = new HashSet<>();
 		for (String word : words) {
 			if (!set.contains(word)) {
@@ -73,20 +91,24 @@ public class Code02_WordSearchII {
 	// 之前的路径上，走过的字符，记录在path里
 	// cur还没有登上，有待检查能不能登上去的前缀树的节点
 	// 如果找到words中的某个str，就记录在 res里
-	// 返回值，从row,col 出发，一共找到了多少个str
+	// 返回值，从row,col 出发，一共找到了多少个word
 	public static int process(
-			char[][] board, int row, int col, 
-			LinkedList<Character> path, TrieNode cur,
+			char[][] board, 
+			int row, int col,
+			LinkedList<Character> path,
+			TrieNode cur, 
 			List<String> res) {
+		/*取出该位置的值，后面要放回去*/
 		char cha = board[row][col];
 		if (cha == 0) { // 这个row col位置是之前走过的位置
 			return 0;
 		}
-		// (row,col) 不是回头路 cha 有效
+		// (row,col) 不是回头路   cha 有效
 
 		int index = cha - 'a';
-		// 如果没路，或者这条路上最终的字符串之前加入过结果里
+		/*不仅有路，而且pass不能为0*/
 		if (cur.nexts[index] == null || cur.nexts[index].pass == 0) {
+			// 如果没路，或者这条路上最终的word之前加入过结果里
 			return 0;
 		}
 		// 没有走回头路且能登上去
@@ -94,9 +116,10 @@ public class Code02_WordSearchII {
 		path.addLast(cha);// 当前位置的字符加到路径里去
 		int fix = 0; // 从row和col位置出发，后续一共搞定了多少答案
 		// 当我来到row col位置，如果决定不往后走了。是不是已经搞定了某个字符串了
-		if (cur.end) {
+		if (cur.end > 0) {
+			/*搞定了一个word，加入结果再继续*/
 			res.add(generatePath(path));
-			cur.end = false;
+			cur.end--;
 			fix++;
 		}
 		// 往上、下、左、右，四个方向尝试
@@ -113,8 +136,11 @@ public class Code02_WordSearchII {
 		if (col < board[0].length - 1) {
 			fix += process(board, row, col + 1, path, cur, res);
 		}
+		/*值放回去*/
 		board[row][col] = cha;
+		/*深度优先遍历还原现场：擦掉当前痕迹*/
 		path.pollLast();
+		/*沿路消除节点中的pass*/
 		cur.pass -= fix;
 		return fix;
 	}
