@@ -16,12 +16,12 @@ import java.util.Queue;
  * Given two words, beginWord and endWord, and a dictionary wordList, return the number of words in the shortest transformation sequence from beginWord to endWord, or 0 if no such sequence exists.
  * 题意：从from到to，返回最小距离（距离是指整个变换过程中所有的单词数量，包括from和to），前提设定参考Code05_WordMinPaths
  * 解题：
- * 	本题只需要距离，宽度优先遍历就可以求出，而Code05_WordMinPaths需要收集所有的最短路径，所以需要宽度+深度优先
+ * 	本题只需要距离，宽度优先遍历就可以求出，而Code04_WordLadderII需要收集所有的最短路径，所以需要宽度+深度优先
  *
  * 优化：
  * 	宽度优先可以从from和to同时开始，找邻居少的一侧发散，直到有邻居撞上就能连起来了，优化了常数项
  *
- * @see Code05_WordMinPaths
+ * @see class26.Code04_WordLadderII
  */
 public class Problem_0127_WordLadder {
 
@@ -134,8 +134,8 @@ public class Problem_0127_WordLadder {
 				//   1
 				//     2
 				/*
-				* w是curSet中的一个邻居，如果找到w的邻居放入nextSet中呢？
-				* 直接变化w，看在dict存在不，存在，且没被访问过就是一个有效的邻居
+				* w是curSet中的一个邻居，如何找到w的邻居放入nextSet中呢？
+				* 直接变化w（一个字母一个字母的变），看在dict存在不，存在，且没被访问过就是一个有效的邻居
 				* */
 				for (int j = 0; j < w.length(); j++) {
 					char[] ch = w.toCharArray();
@@ -144,7 +144,7 @@ public class Problem_0127_WordLadder {
 							ch[j] = c;
 							String next = String.valueOf(ch);
 							/*
-							* 如果变出来的word，和to一次发散出来的邻居撞上了，表示连起来了
+							* 如果变出来的word，和to依次发散出来的邻居撞上了，表示连起来了
 							* 为什么直接返回len：每次遍历邻居不管是from一侧还是to一侧的len都++了
 							* */
 							if (endSet.contains(next)) {
