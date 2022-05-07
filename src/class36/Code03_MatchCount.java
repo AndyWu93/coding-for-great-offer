@@ -1,8 +1,20 @@
 package class36;
 
-// 来自美团
-// 给定两个字符串s1和s2
-// 返回在s1中有多少个子串等于s2
+/**
+ * 来自美团
+ * 给定两个字符串s1和s2
+ * 返回在s1中有多少个子串等于s2
+ *
+ * 解题：
+ * 	本题改造一下kmp就可以
+ * 	如何改造？
+ * 	s1s2每个字符比对，当来到s2来到末尾，收集一下count
+ * 	然后，s2上的指针，跳至s2最后一个字符的next数组信息位置，
+ * 	从那里开始继续和s1比较，来到s2来到末尾，继续收集一下count
+ * 	所以，需要改造的地方：
+ * 		1. next数组，s2最后一个字符也需要有信息
+ * 		2. 主方法里x,y比较时的逻辑
+ */
 public class Code03_MatchCount {
 
 	public static int sa(String s1, String s2) {
@@ -24,6 +36,7 @@ public class Code03_MatchCount {
 			if (str1[x] == str2[y]) {
 				x++;
 				y++;
+				/*需要关注一下y指针，来到末尾位置的时候，y跳至信息位置，继续比较，继续收集count*/
 				if (y == str2.length) {
 					count++;
 					y = next[y];
@@ -46,6 +59,7 @@ public class Code03_MatchCount {
 		if (str2.length == 1) {
 			return new int[] { -1, 0 };
 		}
+		/*长度多了1位*/
 		int[] next = new int[str2.length + 1];
 		next[0] = -1;
 		next[1] = 0;

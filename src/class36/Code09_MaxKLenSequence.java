@@ -2,9 +2,19 @@ package class36;
 
 import java.util.TreeSet;
 
-// 来自腾讯
-// 给定一个字符串str，和一个正数k
-// 返回长度为k的所有子序列中，字典序最大的子序列
+/**
+ * 来自腾讯
+ * 给定一个字符串str，和一个正数k
+ * 返回长度为k的所有子序列中，字典序最大的子序列
+ *
+ * 解题：
+ * 	生成所有的子序列肯定不行。
+ * 	所以一定要O(N)判断当前字符是否去留
+ * 	字典序最大最大，就是要求前缀尽量大。本题规定子序列长度必须为k
+ * 	所以需要保证k个字符里前缀尽量大，什么结构可以做呢？单调栈
+ * 	单调栈能够保证压在栈底的是到目前为止遇到的最大的，倒数第二大...
+ *  所以只要保证后面的字符还能够凑足k个，就可以用单调栈筛选出排名前几的字符串
+ */
 public class Code09_MaxKLenSequence {
 
 	public static String maxString(String s, int k) {
@@ -16,14 +26,18 @@ public class Code09_MaxKLenSequence {
 		char[] stack = new char[n];
 		int size = 0;
 		for (int i = 0; i < n; i++) {
+			/*单调栈，需要标准i后面的字符加上栈里存着的大于k个，才可以弹出*/
 			while (size > 0 && stack[size - 1] < str[i] && size + n - i > k) {
 				size--;
 			}
 			if (size + n - i == k) {
+				/*栈里，和i后面的字符加起来刚好k个，不用筛选了，都拿进来，直接返回*/
 				return String.valueOf(stack, 0, size) + s.substring(i);
 			}
+			/*遇到相等的char可以压在上面*/
 			stack[size++] = str[i];
 		}
+		/*栈里面排名前几的数量很多，大于k个，选前k个*/
 		return String.valueOf(stack, 0, k);
 	}
 
