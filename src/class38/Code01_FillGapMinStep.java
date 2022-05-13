@@ -1,12 +1,43 @@
 package class38;
 
-// 来自字节
-// 给定两个数a和b
-// 第1轮，把1选择给a或者b
-// 第2轮，把2选择给a或者b
-// ...
-// 第i轮，把i选择给a或者b
-// 想让a和b的值一样大，请问至少需要多少轮？
+/**
+ * 来自字节
+ * 给定两个数a和b
+ * 第1轮，把1选择给a或者b
+ * 第2轮，把2选择给a或者b
+ * ...
+ * 第i轮，把i选择给a或者b
+ * 想让a和b的值一样大，请问至少需要多少轮？
+ *
+ * 解题：
+ * 	本题考查数学能力
+ * 分析：
+ * 	i轮之内，a和b拿到数总和分别是x,y，
+ * 	那
+ * 	x+y:1到i累加和sum(i)，
+ * 	x-y:一定是补平了a和b的初始差s（假设x>y）
+ * 	化简计算出x，y
+ * 	x = (sum + s)/2
+ * 	y = (sum - s)/2
+ * 	x,y一定都是大于等于0的int，因为x>y，所以y大于等于0的int就行了
+ * 	所以
+ * 	(sum - s)/2 >= 0(int)
+ * 	进一步化简
+ * 	sum - s >= 0(偶数)
+ * 代入i，题目转化为：
+ * 	i*(i+1)/2 - s >= 0(偶数)
+ * 	求出最小的i
+ * 怎么求？
+ * 	方法1：i从1开始，一个一个试，O(N)，能过
+ * 	方法2：复杂度O(logN)
+ * 		先找出i*(i+1)/2 - s >= 0，不谈偶数的事，怎么找最快呢？
+ * 		i不是一个一个试，i可以是1,2,4,8,16,32，这样每一步很大，这样能够锁定一个i的范围，比如i可以确定在16~32之间
+ * 		接下来确定i的具体位置，可以在16~32范围内二分
+ * 		最终i拿到一个结果比如是20，那就从20开始代入 i*(i+1)/2 - s 看结果是不是偶数
+ * 		因为
+ * 		s的奇偶性是固定了，i*(i+1)/2通过观察奇偶变化周期为4，
+ * 		所以20往后最多4次，就能找到与s奇偶性一致的i，即答案
+ */
 public class Code01_FillGapMinStep {
 
 	// 暴力方法
@@ -42,12 +73,20 @@ public class Code01_FillGapMinStep {
 		return num - 1;
 	}
 
+	/**
+	 * O(logN)
+	 */
 	public static int minStep2(int a, int b) {
 		if (a == b) {
+			/*相等的话，0轮就可以了*/
 			return 0;
 		}
+		/*先找到s*/
 		int s = Math.abs(a - b);
-		// 找到sum >= s, 最小的i
+		/*
+		* 找到sum >= s, 最小的i，
+		* 这里s为什么*2，因为sum的公式是i(i+1)/2,为了方便，best函数中只要计算i(i+1)就行了
+		* */
 		int begin = best(s << 1);
 		for (; (begin * (begin + 1) / 2 - s) % 2 != 0;) {
 			begin++;
@@ -55,13 +94,18 @@ public class Code01_FillGapMinStep {
 		return begin;
 	}
 
+	/*
+	* 返回 i(i+1)>=s2 中最小的i
+	* */
 	public static int best(int s2) {
+		/*先划定一个范围L~R*/
 		int L = 0;
 		int R = 1;
 		for (; R * (R + 1) < s2;) {
 			L = R;
 			R *= 2;
 		}
+		/*L~R范围内二分，找出最小的i*/
 		int ans = 0;
 		while (L <= R) {
 			int M = (L + R) / 2;
