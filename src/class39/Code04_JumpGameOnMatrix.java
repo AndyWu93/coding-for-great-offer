@@ -1,12 +1,17 @@
 package class39;
 
-// 来自京东
-// 给定一个二维数组matrix，matrix[i][j] = k代表:
-// 从(i,j)位置可以随意往右跳<=k步，或者从(i,j)位置可以随意往下跳<=k步
-// 如果matrix[i][j] = 0，代表来到(i,j)位置必须停止
-// 返回从matrix左上角到右下角，至少要跳几次
-// 已知matrix中行数n <= 5000, 列数m <= 5000
-// matrix中的值，<= 5000
+/**
+ * 来自京东
+ * 给定一个二维数组matrix，matrix[i][j] = k代表:
+ * 从(i,j)位置可以随意往右跳<=k步，或者从(i,j)位置可以随意往下跳<=k步
+ * 如果matrix[i][j] = 0，代表来到(i,j)位置必须停止
+ * 返回从matrix左上角到右下角，至少要跳几次
+ * 已知matrix中行数n <= 5000, 列数m <= 5000
+ * matrix中的值 <= 1000
+ *
+ * 解题：
+ * 	写出暴力递归，后面是2个参数的dp
+ */
 // 最弟弟的技巧也过了。最优解 -> dp+枚举优化(线段树，体系学习班)
 public class Code04_JumpGameOnMatrix {
 
@@ -21,18 +26,30 @@ public class Code04_JumpGameOnMatrix {
 	// 当前最大能跳多远，map[row][col]值决定，只能向右、或者向下
 	// 返回，到达右下角，最小跳几次？
 	// 5000 * 5000 = 25000000 -> 2 * (10 ^ 7)
+	/*
+	* 2个可变参数，改成动态规划，从左往右，从下往上推
+	* 有枚举行为怎么优化？
+	* 分析一下，来到一个普遍位置dp[x][y]，需要分别求出下面map[x][y]个长度，右边map[x][y]个长度的min
+	* 因为这个长度不固定，所以无法窗口或者堆，那什么可以求出范围内的最小值？用线段树
+	* */
 	public static int process(int[][] map, int row, int col) {
 		if (row == map.length - 1 && col == map[0].length - 1) {
+			/*已经到右下角了，跳0步*/
 			return 0;
 		}
 		// 如果没到右下角
 		if (map[row][col] == 0) {
+			/*该路不通*/
 			return Integer.MAX_VALUE;
 		}
 		// 当前位置，可以去很多的位置，next含义：
 		// 在所有能去的位置里，哪个位置最后到达右下角，跳的次数最少，就是next
 		int next = Integer.MAX_VALUE;
 		// 往下能到达的位置，全试一遍
+		/*
+		* down < map.length && (down - row) <= map[row][col]：
+		* 	往下不能越界，可选的范围是[row+1,row+map[row][col]]
+		* */
 		for (int down = row + 1; down < map.length && (down - row) <= map[row][col]; down++) {
 			next = Math.min(next, process(map, down, col));
 		}
@@ -52,33 +69,40 @@ public class Code04_JumpGameOnMatrix {
 	public static int jump2(int[][] arr) {
 		int n = arr.length;
 		int m = arr[0].length;
+		/*把原arr，转化成map，好计算*/
 		int[][] map = new int[n + 1][m + 1];
 		for (int a = 0, b = 1; a < n; a++, b++) {
 			for (int c = 0, d = 1; c < m; c++, d++) {
 				map[b][d] = arr[a][c];
 			}
 		}
+		/*map中有n行，那就准备n+1个线段树，一行一个线段树*/
 		SegmentTree[] rowTrees = new SegmentTree[n + 1];
 		for (int i = 1; i <= n; i++) {
+			/*每行线段树多大呢？map一行的长度有多少，就有多大，初始值都是系统最大值*/
 			rowTrees[i] = new SegmentTree(m);
 		}
 		SegmentTree[] colTrees = new SegmentTree[m + 1];
 		for (int i = 1; i <= m; i++) {
 			colTrees[i] = new SegmentTree(n);
 		}
+		/*因为dp[n][m]=0,所以，先把最后一行的线段树的最后一个位置更新成0*/
 		rowTrees[n].update(m, m, 0, 1, m, 1);
 		colTrees[m].update(n, n, 0, 1, n, 1);
+		/*计算出dp最后一行的值*/
 		for (int col = m - 1; col >= 1; col--) {
 			if (map[n][col] != 0) {
 				int left = col + 1;
 				int right = Math.min(col + map[n][col], m);
 				int next = rowTrees[n].query(left, right, 1, m, 1);
 				if (next != Integer.MAX_VALUE) {
+					/*n是固定的，col是遍历的值*/
 					rowTrees[n].update(col, col, next + 1, 1, m, 1);
 					colTrees[col].update(n, n, next + 1, 1, n, 1);
 				}
 			}
 		}
+		/*dp表最后一列*/
 		for (int row = n - 1; row >= 1; row--) {
 			if (map[row][m] != 0) {
 				int up = row + 1;
@@ -90,18 +114,22 @@ public class Code04_JumpGameOnMatrix {
 				}
 			}
 		}
+		/*普遍位置*/
 		for (int row = n - 1; row >= 1; row--) {
 			for (int col = m - 1; col >= 1; col--) {
 				if (map[row][col] != 0) {
 					// (row,col) 往右是什么范围呢？[left,right]
 					int left = col + 1;
 					int right = Math.min(col + map[row][col], m);
+					/*dp[i][j]右边某个范围求最小值*/
 					int next1 = rowTrees[row].query(left, right, 1, m, 1);
 					// (row,col) 往下是什么范围呢？[up,down]
 					int up = row + 1;
 					int down = Math.min(row + map[row][col], n);
+					/*dp[i][j]下边某个范围求最小值*/
 					int next2 = colTrees[col].query(up, down, 1, n, 1);
 					int next = Math.min(next1, next2);
+					/*获得的结果，更新回线段树对应的位置*/
 					if (next != Integer.MAX_VALUE) {
 						rowTrees[row].update(col, col, next + 1, 1, m, 1);
 						colTrees[col].update(row, row, next + 1, 1, n, 1);
@@ -109,6 +137,7 @@ public class Code04_JumpGameOnMatrix {
 				}
 			}
 		}
+		/*最后返回的是第一个行线段树，1~1位置的值，就是dp[0][0]*/
 		return rowTrees[1].query(1, 1, 1, m, 1);
 	}
 
@@ -126,6 +155,7 @@ public class Code04_JumpGameOnMatrix {
 			min = new int[N << 2];
 			change = new int[N << 2];
 			update = new boolean[N << 2];
+			/*将每个位置都更新成系统最大值*/
 			update(1, size, Integer.MAX_VALUE, 1, size, 1);
 		}
 

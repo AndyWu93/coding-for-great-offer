@@ -1,12 +1,17 @@
 package class39;
 
-// 来自腾讯
-// 给定一个只由0和1组成的字符串S，假设下标从1开始，规定i位置的字符价值V[i]计算方式如下 : 
-// 1) i == 1时，V[i] = 1
-// 2) i > 1时，如果S[i] != S[i-1]，V[i] = 1
-// 3) i > 1时，如果S[i] == S[i-1]，V[i] = V[i-1] + 1
-// 你可以随意删除S中的字符，返回整个S的最大价值
-// 字符串长度<=5000
+/**
+ * 来自腾讯
+ * 给定一个只由0和1组成的字符串S，假设下标从1开始，规定i位置的字符价值V[i]计算方式如下:
+ * 1) i == 1时，V[i] = 1
+ * 2) i > 1时，如果S[i] != S[i-1]，V[i] = 1
+ * 3) i > 1时，如果S[i] == S[i-1]，V[i] = V[i-1] + 1
+ * 你可以随意删除S中的字符，返回整个S的最大价值
+ * 字符串长度<=5000
+ *
+ * 解题：
+ * 	动态规划，从左往右的尝试（背包 + 环境转为参数）
+ */
 public class Code01_01AddValue {
 
 	public static int max1(String s) {
@@ -38,6 +43,11 @@ public class Code01_01AddValue {
 		int next1 = process1(arr, index + 1, arr[index], curValue);
 		// 当前index位置的字符不保留
 		int next2 = process1(arr, index + 1, lastNum, baseValue);
+		/*
+		* 这里好像有问题，是不是应该是
+		* return Math.max(next1, next2);
+		* 更合理？？
+		* */
 		return Math.max(curValue + next1, next2);
 	}
 
