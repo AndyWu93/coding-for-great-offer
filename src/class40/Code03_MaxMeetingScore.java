@@ -3,17 +3,26 @@ package class40;
 import java.util.Arrays;
 import java.util.PriorityQueue;
 
-// 给定int[][] meetings，比如
-// {
-//   {66, 70}   0号会议截止时间66，获得收益70
-//   {25, 90}   1号会议截止时间25，获得收益90
-//   {50, 30}   2号会议截止时间50，获得收益30
-// }
-// 一开始的时间是0，任何会议都持续10的时间，但是一个会议一定要在该会议截止时间之前开始
-// 只有一个会议室，任何会议不能共用会议室，一旦一个会议被正确安排，将获得这个会议的收益
-// 请返回最大的收益
+/**
+ * 给定int[][] meetings，比如
+ * {
+ *    {66, 70}   0号会议截止时间66，获得收益70
+ *    {25, 90}   1号会议截止时间25，获得收益90
+ *    {50, 30}   2号会议截止时间50，获得收益30
+ *  }
+ * 一开始的时间是0，任何会议都持续10的时间，但是一个会议一定要在该会议截止时间之前结束
+ * 只有一个会议室，任何会议不能共用会议室，一旦一个会议被正确安排，将获得这个会议的收益
+ * 请返回最大的收益
+ *
+ * 解题：
+ * 	本题贪心，时间冲突的会议，只留收益大的。用小根堆
+ *
+ */
 public class Code03_MaxMeetingScore {
 
+	/**
+	 * 暴力解作对数器
+	 */
 	public static int maxScore1(int[][] meetings) {
 		Arrays.sort(meetings, (a, b) -> a[0] - b[0]);
 		int[][] path = new int[meetings.length][];
@@ -23,6 +32,7 @@ public class Code03_MaxMeetingScore {
 
 	public static int process1(int[][] meetings, int index, int[][] path, int size) {
 		if (index == meetings.length) {
+			/*背包问题选择会议，校验会议的时间，再计算收益。*/
 			int time = 0;
 			int ans = 0;
 			for (int i = 0; i < size; i++) {
@@ -42,23 +52,31 @@ public class Code03_MaxMeetingScore {
 		return Math.max(p1, p2);
 	}
 
+	/**
+	 * 贪心
+	 */
 	public static int maxScore2(int[][] meetings) {
+		/*先按会议截止时间排序*/
 		Arrays.sort(meetings, (a, b) -> a[0] - b[0]);
+		/*小根堆里放会议的收益*/
 		PriorityQueue<Integer> heap = new PriorityQueue<>();
 		int time = 0;
 		// 已经把所有会议，按照截止时间，从小到大，排序了！
 		// 截止时间一样的，谁排前谁排后，无所谓
 		for (int i = 0; i < meetings.length; i++) {
 			if (time + 10 <= meetings[i][0]) {
+				/*会议没有截止，加入堆里，且时间往右推10*/
 				heap.add(meetings[i][1]);
 				time += 10;
 			} else {
+				/*会议截止了，看能不能比得过之前的会议收益最少的，比得过的话，就把之前会议的时间让个这个*/
 				if (!heap.isEmpty() && heap.peek() < meetings[i][1]) {
 					heap.poll();
 					heap.add(meetings[i][1]);
 				}
 			}
 		}
+		/*选完了，堆里的收益累加*/
 		int ans = 0;
 		while (!heap.isEmpty()) {
 			ans += heap.poll();
