@@ -3,16 +3,23 @@ package class41;
 import java.util.Arrays;
 import java.util.HashMap;
 
-// 来自小红书
-// 有四种诗的韵律分别为: AABB、ABAB、ABBA、AAAA
-// 比如 : 1 1 3 3就属于AABB型的韵律、6 6 6 6就属于AAAA型的韵律等等
-// 一个数组arr，当然可以生成很多的子序列，如果某个子序列一直以韵律的方式连接起来，我们称这样的子序列是有效的
-// 比如, arr = { 1, 1, 15, 1, 34, 1, 2, 67, 3, 3, 2, 4, 15, 3, 17, 4, 3, 7, 52, 7, 81, 9, 9 }
-// arr的一个子序列为{1, 1, 1, 1, 2, 3, 3, 2, 4, 3, 4, 3, 7, 7, 9, 9}
-// 其中1, 1, 1, 1是AAAA、2, 3, 3, 2是ABBA、4, 3, 4, 3是ABAB、7, 7, 9, 9是AABB
-// 可以看到，整个子序列一直以韵律的方式连接起来，所以这个子序列是有效的
-// 给定一个数组arr, 返回最长的有效子序列长度
-// 题目限制 : arr长度 <= 4000, arr中的值<= 10^9
+/**
+ * 来自小红书
+ * 有四种诗的韵律分别为: AABB、ABAB、ABBA、AAAA
+ * 比如 : 1 1 3 3就属于AABB型的韵律、6 6 6 6就属于AAAA型的韵律等等
+ * 一个数组arr，当然可以生成很多的子序列，如果某个子序列一直以韵律的方式连接起来，我们称这样的子序列是有效的
+ * 比如, arr = { 1, 1, 15, 1, 34, 1, 2, 67, 3, 3, 2, 4, 15, 3, 17, 4, 3, 7, 52, 7, 81, 9, 9 }
+ * arr的一个子序列为{1, 1, 1, 1, 2, 3, 3, 2, 4, 3, 4, 3, 7, 7, 9, 9}
+ * 其中1, 1, 1, 1是AAAA、2, 3, 3, 2是ABBA、4, 3, 4, 3是ABAB、7, 7, 9, 9是AABB
+ * 可以看到，整个子序列一直以韵律的方式连接起来，所以这个子序列是有效的
+ *  给定一个数组arr, 返回最长的有效子序列长度
+ * 题目限制 : arr长度 <= 4000, arr中的值<= 10^9
+ *
+ * 解题：
+ * 	题目中要求找到符合规律的最长子序列长度，所以和每个位置的值具体是多少没有关系，只要求值的变化符合规律
+ * 	所以第一步先离散化，arr中的值化简为0~n-1
+ * 	接下来就是设计递归函数，看如何尝试
+ */
 // 离散化之后，arr长度 <= 4000,  arr中的值<= 4000
 public class Code02_PoemProblem {
 
@@ -34,6 +41,9 @@ public class Code02_PoemProblem {
 //		return p0~p4的最大值
 //	}
 
+	/**
+	 * 暴力对数器，把所有的子序列找出的，一个一个的选
+	 */
 	// AABB
 	// ABAB
 	// ABBA
@@ -76,6 +86,10 @@ public class Code02_PoemProblem {
 				|| (p[i] == p[i + 3] && p[i + 1] == p[i + 2] && p[i] != p[i + 1]);
 	}
 
+
+	/**
+	 * 尝试
+	 */
 	// 0 : [3,6,9]
 	// 1 : [2,7,13]
 	// 2 : [23]
@@ -102,6 +116,9 @@ public class Code02_PoemProblem {
 			arr[i] = vmap.get(arr[i]);
 			sizeArr[arr[i]]++;
 		}
+		/*
+		* imap
+		* */
 		int[][] imap = new int[index][];
 		for (int i = 0; i < index; i++) {
 			imap[i] = new int[sizeArr[i]];
@@ -112,23 +129,44 @@ public class Code02_PoemProblem {
 		return process2(arr, imap, 0);
 	}
 
+	/*
+	* imap: arr中每个值的下标集合
+	* 从i位置往后一直到结尾，能够找出符合符合条件的最长子序列长度是多少
+	* 返回长度
+	* */
 	// AABB
 	// ABAB
 	// ABBA
 	// AAAA
 	public static int process2(int[] varr, int[][] imap, int i) {
 		if (i + 4 > varr.length) {
+			/*i往后凑不足4个了*/
 			return 0;
 		}
+		/*i位置不参与，最终的子序列中没有i位置字符*/
 		int p0 = process2(varr, imap, i + 1);
+		/*
+		* i位置作为A，i往后找出最短的ABB出来，看最后一个B在哪里
+		* 怎么找最快呢？
+		* 当然是通过imap，A往后与A不一样的数都作为B试一遍，直到最终看最后的B在哪儿
+		* 因为imap中某一个值的下标集合是有序的，所以在一个有序的arr中找大于它最近的值可以用二分
+		* */
 		// AABB
 		int p1 = 0;
+		/*找到第二个A*/
 		int rightClosedP1A2 = rightClosed(imap, varr[i], i);
 		if (rightClosedP1A2 != -1) {
+			/*第二个A后面每个位置作为B试一遍*/
 			for (int next = rightClosedP1A2 + 1; next < varr.length; next++) {
 				if (varr[i] != varr[next]) {
+					/*varr[next]作为B,第一个B位置是next，找出第二个B*/
 					int rightClosedP1B2 = rightClosed(imap, varr[next], next);
 					if (rightClosedP1B2 != -1) {
+						/*
+						* 每个B都收集一样得到的长度，取最大的
+						* 4：这里找到的一组符合条件的4个值
+						* rightClosedP1B2 + 1：从找到的4个值后面继续找
+						* */
 						p1 = Math.max(p1, 4 + process2(varr, imap, rightClosedP1B2 + 1));
 					}
 				}
@@ -162,6 +200,7 @@ public class Code02_PoemProblem {
 				}
 			}
 		}
+		/*这里不需要for循环了，直接再找3次arr[i]*/
 		// AAAA
 		int p4 = 0;
 		int rightClosedP4A2 = rightClosed(imap, varr[i], i);
@@ -170,6 +209,7 @@ public class Code02_PoemProblem {
 		if (rightClosedP4A4 != -1) {
 			p4 = Math.max(p4, 4 + process2(varr, imap, rightClosedP4A4 + 1));
 		}
+		/*pk，找最大*/
 		return Math.max(p0, Math.max(Math.max(p1, p2), Math.max(p3, p4)));
 	}
 
@@ -189,6 +229,13 @@ public class Code02_PoemProblem {
 		return ans == -1 ? -1 : imap[v][ans];
 	}
 
+	/**
+	 * 改成动态规划
+	 * 一维表：O(N)
+	 * 每个格子要3个for循环O(N)
+	 * 每个循环中多次二分查找O(logN)
+	 * 所以O(N^2*logN)
+	 */
 	public static int maxLen3(int[] arr) {
 		if (arr == null || arr.length < 4) {
 			return 0;
@@ -291,9 +338,9 @@ public class Code02_PoemProblem {
 	// 所以：
 	// 1) 当来到arr中的一个数字num的时候，
 	// 如果num已经出现了2次了, 只要之前还有一个和num不同的数，
-	// 也出现了两次，则一定符合了某个规则, 长度直接+4，然后清空所有的统计
+	// 也出现了两次，则一定符合了某个规则, 长度直接+4，然后清空当前所有的统计，继续往后
 	// 2) 当来到arr中的一个数字num的时候,
-	// 如果num已经出现了4次了(规则四), 长度直接+4，然后清空所有的统计
+	// 如果num已经出现了4次了(规则四), 长度直接+4，然后清空当前所有的统计，继续往后
 	// 但是如果我去掉某个规则，该贪心直接报废，比如韵律规则变成:
 	// AABB、ABAB、AAAA
 	// 因为少了ABBA, 所以上面的化简不成立了, 得重新分析新规则下的贪心策略
