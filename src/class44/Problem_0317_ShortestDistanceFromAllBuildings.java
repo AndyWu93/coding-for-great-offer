@@ -4,6 +4,27 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Queue;
 
+/**
+ * 给定一个二维矩阵，其中的值0代表路，1代表人，2代表障碍
+ * 每个人都可以上下左右移动，但是只能走值为0的格子
+ * 想把所有的人聚集在某个值为0的地方开会，希望所有人到会议点的总距离最短
+ * 返回最短的开会总距离
+ * 如果无论如何都无法让所有的人聚集到一起，返回-1
+ *
+ * 解题：
+ * 	整体思路是对每一个1，利用宽度优先遍历，生成一张距离表
+ * 	最后，k张距离表，在每个格子求和，所有的和格子里取最小值，就是题解
+ *
+ * 优化：
+ * 	题目并不是很难，主要是coding，有一个大佬写的很好，里面主要有几个优化：
+ * 1. 1张距离表，重叠使用，可以直接收集最小值
+ * 2. 每次换了一个1做遍历时，定义新的路的值，这样保证了不会往回走，还解决了联通性问题
+ * 3. 联通性问题：不是所有的1能到的位置都能联通起来
+ * 4. 上下左右遍历不使用hardCode
+ *
+ * @see class42.Problem_0296_BestMeetingPoint 无障碍的情况
+ */
+//leetcode题目 : https://leetcode.com/problems/shortest-distance-from-all-buildings/
 public class Problem_0317_ShortestDistanceFromAllBuildings {
 
 	// 如果grid中0比较少，用这个方法比较好
@@ -164,6 +185,9 @@ public class Problem_0317_ShortestDistanceFromAllBuildings {
 		}
 	}
 
+	/**
+	 * 看大佬怎么实现代码
+	 */
 	// 方法三的大流程和方法二完全一样，从每一个1出发，而不从0出发
 	// 运行时间快主要是因为常数优化，以下是优化点：
 	// 1) 宽度优先遍历时，一次解决一层，不是一个一个遍历：
@@ -185,14 +209,17 @@ public class Problem_0317_ShortestDistanceFromAllBuildings {
 	// dist[nextr][nextc] += level;
 	public static int shortestDistance3(int[][] grid) {
 		int[][] dist = new int[grid.length][grid[0].length];
+		/*一开始0是路*/
 		int pass = 0;
 		int step = Integer.MAX_VALUE;
 		int[] trans = { 0, 1, 0, -1, 0 };
 		for (int i = 0; i < grid.length; i++) {
 			for (int j = 0; j < grid[0].length; j++) {
 				if (grid[i][j] == 1) {
+					/*遇到了1个1，开始宽度优先遍历，返回了距离表中的最小值，并重新定义了新的路*/
 					step = bfs(grid, dist, i, j, pass--, trans);
 					if (step == Integer.MAX_VALUE) {
+						/*无法联通，直接返回*/
 						return -1;
 					}
 				}
@@ -211,21 +238,34 @@ public class Problem_0317_ShortestDistanceFromAllBuildings {
 	public static int bfs(int[][] grid, int[][] dist, int row, int col, int pass, int[] trans) {
 		Queue<int[]> que = new LinkedList<int[]>();
 		que.offer(new int[] { row, col });
+		/*当前批次，用于计算距离，第几批，当前的距离就是几*/
 		int level = 0;
+		/*
+		* ans初始值，当ans不更新，返回初始值。
+		* 什么情况下ans不更新？
+		* 当前格子周围没有路的情况下
+		* */
 		int ans = Integer.MAX_VALUE;
 		while (!que.isEmpty()) {
+			/*一次遍历一批*/
 			int size = que.size();
 			level++;
 			for (int k = 0; k < size; k++) {
 				int[] node = que.poll();
+				/*上下左右如何不hardCode，用tran数组来表示每次row、col需要增加index值*/
 				for (int i = 1; i < trans.length; i++) { // 上下左右
 					int nextr = node[0] + trans[i - 1];
 					int nextc = node[1] + trans[i];
+					/*不越界，且当前有路*/
 					if (nextr >= 0 && nextr < grid.length && nextc >= 0 && nextc < grid[0].length
 							&& grid[nextr][nextc] == pass) {
+						/*bfs遍历*/
 						que.offer(new int[] { nextr, nextc });
+						/*距离表当前格子距离累加*/
 						dist[nextr][nextc] += level;
+						/*收集最小距离*/
 						ans = Math.min(ans, dist[nextr][nextc]);
+						/*走过的路更新一下，每次的路走过以后就会-1*/
 						grid[nextr][nextc]--;
 					}
 				}
