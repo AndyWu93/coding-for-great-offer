@@ -62,7 +62,7 @@ public class Problem_0029_BitAddMinusMultiDiv {
 	 * + 	0110
 	 * +   0000
 	 * -------------
-	 *     0111100
+	 *     0100100
 	 */
 	public static int multi(int a, int b) {
 		int res = 0;
